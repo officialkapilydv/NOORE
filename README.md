@@ -43,6 +43,8 @@ docker compose -f docker-compose.dev.yml up -d      # dev container  (http://loc
 
 ## Quick start without Docker
 
+Requires Node.js 20.19+ or 22.12+ (Vite 7's minimum).
+
 ```bash
 npm install          # installs root, client and server workspaces
 npm run dev          # starts the API (port 4000) and the storefront (port 5173) together
@@ -118,7 +120,7 @@ The API uses a small atomic JSON document store in `server/data/` (products, col
 ## Tech
 
 - **Frontend:** React 19, Vite 7, react-three-fiber + drei + postprocessing (Three.js), Framer Motion, Lenis smooth scroll, Zustand, React Router 7
-- **Backend:** Node 20+, Express 5, zod validation, JWT auth, bcrypt, multer uploads
+- **Backend:** Node 20.19+ (or 22.12+), Express 5, zod validation, JWT auth, bcryptjs, multer uploads
 - **Design:** Cormorant Garamond + Jost, espresso/cream/gold palette, custom cursor, film grain, page-transition curtains, magnetic buttons, split-text reveals, 3D tilt cards
 
 ## Notes
