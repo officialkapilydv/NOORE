@@ -1,0 +1,320 @@
+[
+  {
+    "id": "ess-01", "slug": "vanilla-bliss", "name": "Vanilla Bliss", "collection": "essentials", "family": "gourmand",
+    "tagline": "Warm vanilla bean, tonka and a drift of coconut cream.",
+    "description": "The candle you reach for without thinking. Vanilla Bliss opens creamy and soft, settles into a warm bakery sweetness and never turns cloying — a gentle glow for the corners of the day.",
+    "story": "We built Vanilla Bliss around Madagascan vanilla absolute rather than the usual synthetic vanillin, then rounded it with tonka and a whisper of toasted coconut. The result smells like a kitchen at golden hour.",
+    "notes": { "top": ["Coconut cream", "Bergamot"], "heart": ["Vanilla orchid", "Heliotrope"], "base": ["Tonka bean", "Sandalwood"] },
+    "moods": ["Cosy", "Comforting", "Slow mornings"], "rooms": ["Living room", "Bedroom"],
+    "price": 899, "rating": 4.8, "reviewCount": 212, "badges": ["Bestseller"], "featured": true, "stock": 48,
+    "sizes": [
+      { "id": "petite", "label": "Petite", "weight": "90 g", "burnTime": "18–20 h", "price": 549 },
+      { "id": "classic", "label": "Classic", "weight": "200 g", "burnTime": "42–45 h", "price": 899 },
+      { "id": "grand", "label": "Grand", "weight": "400 g", "burnTime": "80–85 h", "price": 1499 }
+    ],
+    "vessel": { "type": "porcelain", "color": "#f3eee6", "wax": "#f6eddc", "lid": "none", "labelBg": "#fbf8f2", "labelText": "#3a2a1e", "accent": "#cfae62", "glow": "#ffcf96" },
+    "image": "/images/products/vanilla-bliss.jpg"
+  },
+  {
+    "id": "ess-02", "slug": "rose-petal", "name": "Rose Petal", "collection": "essentials", "family": "floral",
+    "tagline": "Fresh-cut garden roses with a dewy green edge.",
+    "description": "Not the powdery rose of old drawers — this is the rose you bury your face in. Bright, dewy petals over a soft musk, in a blush glass that glows pink when lit.",
+    "story": "Rose Petal uses a Bulgarian rose accord layered with lychee for sparkle and a touch of green stem so the flower smells alive, not pressed.",
+    "notes": { "top": ["Lychee", "Pink pepper"], "heart": ["Bulgarian rose", "Peony"], "base": ["White musk", "Cedar"] },
+    "moods": ["Romantic", "Fresh", "Uplifting"], "rooms": ["Bedroom", "Dressing room"],
+    "price": 949, "rating": 4.7, "reviewCount": 168, "badges": [], "featured": false, "stock": 36,
+    "sizes": [
+      { "id": "petite", "label": "Petite", "weight": "90 g", "burnTime": "18–20 h", "price": 579 },
+      { "id": "classic", "label": "Classic", "weight": "200 g", "burnTime": "42–45 h", "price": 949 },
+      { "id": "grand", "label": "Grand", "weight": "400 g", "burnTime": "80–85 h", "price": 1599 }
+    ],
+    "vessel": { "type": "tinted", "color": "#eaa7b8", "wax": "#f7e3e3", "lid": "none", "labelBg": "#fbf4f3", "labelText": "#4a2a2a", "accent": "#d2a0a8", "glow": "#ffb7c4" },
+    "image": "/images/products/rose-petal.jpg"
+  },
+  {
+    "id": "ess-03", "slug": "lemongrass", "name": "Lemongrass", "collection": "essentials", "family": "fresh",
+    "tagline": "Crushed lemongrass, green tea and cool mint.",
+    "description": "A clean, kitchen-garden freshness that clears the room. Lemongrass is our morning candle — zesty and green at first, softening into tea leaves and a faint mint coolness.",
+    "story": "Steam-distilled lemongrass oil from Kerala meets a sheer green tea accord. We kept the base deliberately light so the scent stays crisp from first light to last.",
+    "notes": { "top": ["Lemongrass", "Lime zest"], "heart": ["Green tea", "Basil"], "base": ["Mint", "Vetiver"] },
+    "moods": ["Energising", "Clean", "Focused"], "rooms": ["Kitchen", "Study"],
+    "price": 899, "rating": 4.6, "reviewCount": 97, "badges": [], "featured": false, "stock": 52,
+    "sizes": [
+      { "id": "petite", "label": "Petite", "weight": "90 g", "burnTime": "18–20 h", "price": 549 },
+      { "id": "classic", "label": "Classic", "weight": "200 g", "burnTime": "42–45 h", "price": 899 },
+      { "id": "grand", "label": "Grand", "weight": "400 g", "burnTime": "80–85 h", "price": 1499 }
+    ],
+    "vessel": { "type": "tinted", "color": "#a9c4ad", "wax": "#f1f3e6", "lid": "none", "labelBg": "#f6f8f1", "labelText": "#2f3d2f", "accent": "#9db89f", "glow": "#d7f2c8" },
+    "image": "/images/products/lemongrass.jpg"
+  },
+  {
+    "id": "ess-04", "slug": "lavender-fields", "name": "Lavender Fields", "collection": "essentials", "family": "herbal",
+    "tagline": "Provence lavender, chamomile and soft linen.",
+    "description": "The slow exhale at the end of the day. True lavender, rounded with chamomile and a clean linen musk — calming without smelling like a spa.",
+    "story": "High-altitude lavandin from Provence gives the brightness; a touch of lavender absolute adds the hay-like depth. Light it twenty minutes before bed.",
+    "notes": { "top": ["Lavender", "Bergamot"], "heart": ["Chamomile", "Sage"], "base": ["Linen musk", "Tonka"] },
+    "moods": ["Calming", "Restful", "Evening"], "rooms": ["Bedroom", "Bathroom"],
+    "price": 949, "rating": 4.9, "reviewCount": 254, "badges": ["Bestseller"], "featured": true, "stock": 40,
+    "sizes": [
+      { "id": "petite", "label": "Petite", "weight": "90 g", "burnTime": "18–20 h", "price": 579 },
+      { "id": "classic", "label": "Classic", "weight": "200 g", "burnTime": "42–45 h", "price": 949 },
+      { "id": "grand", "label": "Grand", "weight": "400 g", "burnTime": "80–85 h", "price": 1599 }
+    ],
+    "vessel": { "type": "tinted", "color": "#b7a6d6", "wax": "#f0ebf7", "lid": "none", "labelBg": "#f8f5fb", "labelText": "#3a2f4d", "accent": "#a894c9", "glow": "#d9c9ff" },
+    "image": "/images/products/lavender-fields.jpg"
+  },
+  {
+    "id": "ess-05", "slug": "sandalwood", "name": "Sandalwood", "collection": "essentials", "family": "woody",
+    "tagline": "Creamy Mysore sandalwood with warm amber.",
+    "description": "Quietly grounding. A milky, meditative sandalwood that settles the room without announcing itself, finished with a soft amber warmth.",
+    "story": "Sandalwood is the scent of early mornings in South Indian homes. We paired a sustainable Australian sandalwood with a classic Mysore accord for that creamy, almost sacred smoothness.",
+    "notes": { "top": ["Cardamom", "Soft citrus"], "heart": ["Mysore sandalwood", "Iris"], "base": ["Amber", "Creamy musk"] },
+    "moods": ["Grounding", "Meditative", "Warm"], "rooms": ["Study", "Prayer corner"],
+    "price": 999, "rating": 4.8, "reviewCount": 143, "badges": [], "featured": false, "stock": 30,
+    "sizes": [
+      { "id": "petite", "label": "Petite", "weight": "90 g", "burnTime": "18–20 h", "price": 599 },
+      { "id": "classic", "label": "Classic", "weight": "200 g", "burnTime": "42–45 h", "price": 999 },
+      { "id": "grand", "label": "Grand", "weight": "400 g", "burnTime": "80–85 h", "price": 1699 }
+    ],
+    "vessel": { "type": "porcelain", "color": "#d6cfc6", "wax": "#f4ecde", "lid": "none", "labelBg": "#f9f6f1", "labelText": "#3b2e24", "accent": "#b9a48a", "glow": "#ffd7a8" },
+    "image": "/images/products/sandalwood.jpg"
+  },
+  {
+    "id": "ess-06", "slug": "citrus-zest", "name": "Citrus Zest", "collection": "essentials", "family": "citrus",
+    "tagline": "Blood orange, grapefruit and a twist of neroli.",
+    "description": "Sunshine in a tumbler. Sparkling citrus peel that fills a room in minutes — bright, happy and endlessly re-lightable.",
+    "story": "Cold-pressed Sicilian blood orange and pink grapefruit sit on a neroli heart, so the freshness lingers instead of fading the way pure citrus does.",
+    "notes": { "top": ["Blood orange", "Pink grapefruit"], "heart": ["Neroli", "Ginger"], "base": ["White woods", "Musk"] },
+    "moods": ["Joyful", "Bright", "Welcoming"], "rooms": ["Kitchen", "Entryway"],
+    "price": 899, "rating": 4.6, "reviewCount": 88, "badges": ["New"], "featured": false, "stock": 60,
+    "sizes": [
+      { "id": "petite", "label": "Petite", "weight": "90 g", "burnTime": "18–20 h", "price": 549 },
+      { "id": "classic", "label": "Classic", "weight": "200 g", "burnTime": "42–45 h", "price": 899 },
+      { "id": "grand", "label": "Grand", "weight": "400 g", "burnTime": "80–85 h", "price": 1499 }
+    ],
+    "vessel": { "type": "tinted", "color": "#f0a65a", "wax": "#fbeedb", "lid": "none", "labelBg": "#fdf6ec", "labelText": "#4a2d12", "accent": "#e09a4f", "glow": "#ffc27a" },
+    "image": "/images/products/citrus-zest.jpg"
+  },
+
+  {
+    "id": "prm-01", "slug": "amber-and-saffron", "name": "Amber & Saffron", "collection": "premium", "family": "amber",
+    "tagline": "Golden saffron threads over molten amber and honey.",
+    "description": "Our signature. Saffron's leathery warmth meets a resinous amber that glows through the honey-coloured glass. It smells like candlelight looks.",
+    "story": "Kashmiri saffron is one of the most expensive materials in perfumery. We use a saffron accord built on real safranal, warmed with labdanum and benzoin — the candle that started NOORÉ.",
+    "notes": { "top": ["Saffron", "Pink pepper"], "heart": ["Honeyed amber", "Rose"], "base": ["Labdanum", "Benzoin", "Vanilla"] },
+    "moods": ["Opulent", "Warm", "Celebratory"], "rooms": ["Living room", "Dining room"],
+    "price": 1799, "rating": 4.9, "reviewCount": 326, "badges": ["Signature", "Bestseller"], "featured": true, "stock": 25,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "220 g", "burnTime": "48–52 h", "price": 1799 },
+      { "id": "grand", "label": "Grand", "weight": "450 g", "burnTime": "90–95 h", "price": 2999 }
+    ],
+    "vessel": { "type": "glass", "color": "#d98a3a", "wax": "#f4dfb7", "lid": "gold", "labelBg": "#f6ead3", "labelText": "#4a2a10", "accent": "#d9b162", "glow": "#ffb15c" },
+    "image": "/images/products/amber-and-saffron.jpg"
+  },
+  {
+    "id": "prm-02", "slug": "oud-and-oak", "name": "Oud & Oak", "collection": "premium", "family": "woody",
+    "tagline": "Smoky oud, aged oak barrels and dark leather.",
+    "description": "Deep, dry and a little dangerous. A smoky oud wrapped in charred oak and worn leather, in near-black glass with a brass rim. For libraries, late nights and good whisky.",
+    "story": "We softened the animalic edge of traditional oud with oak-barrel and whisky-lactone notes, so it reads as refined rather than medicinal — the oud for people who think they don't like oud.",
+    "notes": { "top": ["Black pepper", "Saffron"], "heart": ["Oud", "Oak wood"], "base": ["Leather", "Smoked vetiver", "Amber"] },
+    "moods": ["Mysterious", "Masculine", "Late night"], "rooms": ["Study", "Living room"],
+    "price": 1899, "rating": 4.8, "reviewCount": 201, "badges": [], "featured": true, "stock": 22,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "220 g", "burnTime": "48–52 h", "price": 1899 },
+      { "id": "grand", "label": "Grand", "weight": "450 g", "burnTime": "90–95 h", "price": 3199 }
+    ],
+    "vessel": { "type": "glass", "color": "#2a1810", "wax": "#efdcbd", "lid": "gold", "labelBg": "#1d120c", "labelText": "#e8cf8a", "accent": "#d2ad5c", "glow": "#ff9f4a" },
+    "image": "/images/products/oud-and-oak.jpg"
+  },
+  {
+    "id": "prm-03", "slug": "velvet-rose", "name": "Velvet Rose", "collection": "premium", "family": "floral",
+    "tagline": "Dark Turkish rose, raspberry and patchouli.",
+    "description": "A rose with its evening dress on. Velvety Turkish rose deepened with raspberry and a shadow of patchouli, glowing through rose-quartz glass.",
+    "story": "Where Rose Petal is the garden, Velvet Rose is the ballroom. Rose absolute and geranium are darkened with patchouli and a drop of oud for an unmistakably grown-up bloom.",
+    "notes": { "top": ["Raspberry", "Pink pepper"], "heart": ["Turkish rose", "Geranium"], "base": ["Patchouli", "Oud", "Musk"] },
+    "moods": ["Sensual", "Elegant", "Evening"], "rooms": ["Bedroom", "Dressing room"],
+    "price": 1699, "rating": 4.7, "reviewCount": 154, "badges": [], "featured": false, "stock": 28,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "220 g", "burnTime": "48–52 h", "price": 1699 },
+      { "id": "grand", "label": "Grand", "weight": "450 g", "burnTime": "90–95 h", "price": 2899 }
+    ],
+    "vessel": { "type": "glass", "color": "#d98a96", "wax": "#f6e4e2", "lid": "none", "labelBg": "#fbf3f2", "labelText": "#4a2630", "accent": "#caa0a6", "glow": "#ffb3c0" },
+    "image": "/images/products/velvet-rose.jpg"
+  },
+  {
+    "id": "prm-04", "slug": "white-jasmine", "name": "White Jasmine", "collection": "premium", "family": "floral",
+    "tagline": "Night-blooming jasmine, tuberose and soft sandal.",
+    "description": "Heady and luminous. Indian jasmine sambac at full bloom, lifted with tuberose and anchored in a milky sandalwood, in a speckled stone vessel that feels hand-thrown.",
+    "story": "Jasmine is harvested before dawn in Tamil Nadu, when the flowers are at their most fragrant. We capture that moment — green, indolic, honeyed — and keep it in bloom for fifty hours.",
+    "notes": { "top": ["Green leaves", "Mandarin"], "heart": ["Jasmine sambac", "Tuberose"], "base": ["Sandalwood", "Musk"] },
+    "moods": ["Luminous", "Romantic", "Festive"], "rooms": ["Living room", "Entryway"],
+    "price": 1799, "rating": 4.8, "reviewCount": 177, "badges": [], "featured": false, "stock": 26,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "220 g", "burnTime": "48–52 h", "price": 1799 },
+      { "id": "grand", "label": "Grand", "weight": "450 g", "burnTime": "90–95 h", "price": 2999 }
+    ],
+    "vessel": { "type": "stone", "color": "#ebe3d6", "wax": "#f7f0e3", "lid": "none", "labelBg": "#f8f3ea", "labelText": "#3f3127", "accent": "#b7a68e", "glow": "#ffe0b5" },
+    "image": "/images/products/white-jasmine.jpg"
+  },
+  {
+    "id": "prm-05", "slug": "eucalyptus-mint", "name": "Eucalyptus Mint", "collection": "premium", "family": "fresh",
+    "tagline": "Cool eucalyptus, peppermint and wet cedar.",
+    "description": "A deep breath of forest air. Crisp eucalyptus and peppermint over rain-soaked cedar in bottle-green glass — the candle for the bathroom you wish was a spa.",
+    "story": "We balanced the sharpness of eucalyptus globulus with a softer eucalyptus radiata and a mossy cedar base, so it refreshes without smelling clinical.",
+    "notes": { "top": ["Eucalyptus", "Peppermint"], "heart": ["Rosemary", "Juniper"], "base": ["Wet cedar", "Oakmoss"] },
+    "moods": ["Reviving", "Clean", "Spa"], "rooms": ["Bathroom", "Study"],
+    "price": 1699, "rating": 4.7, "reviewCount": 119, "badges": [], "featured": false, "stock": 33,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "220 g", "burnTime": "48–52 h", "price": 1699 },
+      { "id": "grand", "label": "Grand", "weight": "450 g", "burnTime": "90–95 h", "price": 2899 }
+    ],
+    "vessel": { "type": "glass", "color": "#2f5a3e", "wax": "#eef1e2", "lid": "none", "labelBg": "#f3f6ee", "labelText": "#243826", "accent": "#8fb39a", "glow": "#c6ffd8" },
+    "image": "/images/products/eucalyptus-mint.jpg"
+  },
+  {
+    "id": "prm-06", "slug": "musk-noir", "name": "Musk Noir", "collection": "premium", "family": "amber",
+    "tagline": "Black musk, iris and smoked vanilla.",
+    "description": "Skin-close and shadowy. A dark, velvety musk softened with powdery iris and a curl of smoked vanilla, in matte black glass. Minimal on the shelf, maximal in the room.",
+    "story": "Musk Noir was composed to smell like cashmere at midnight — clean musks layered until they turn plush, then darkened with iris and a trace of birch tar.",
+    "notes": { "top": ["Bergamot", "Cardamom"], "heart": ["Iris", "Violet leaf"], "base": ["Black musk", "Smoked vanilla", "Birch"] },
+    "moods": ["Intimate", "Modern", "Minimal"], "rooms": ["Bedroom", "Living room"],
+    "price": 1899, "rating": 4.8, "reviewCount": 164, "badges": ["New"], "featured": false, "stock": 24,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "220 g", "burnTime": "48–52 h", "price": 1899 },
+      { "id": "grand", "label": "Grand", "weight": "450 g", "burnTime": "90–95 h", "price": 3199 }
+    ],
+    "vessel": { "type": "matte", "color": "#161210", "wax": "#efe4d2", "lid": "none", "labelBg": "#1a1513", "labelText": "#e8dcc6", "accent": "#b89a5a", "glow": "#ffb978" },
+    "image": "/images/products/musk-noir.jpg"
+  },
+
+  {
+    "id": "lux-01", "slug": "royal-oud", "name": "Royal Oud", "collection": "luxury", "family": "woody",
+    "tagline": "Cambodian oud, rose and amber in gold-veined marble.",
+    "description": "The crown of the collection. A regal oud — smooth, resinous, lightly floral — in a white marble vessel veined with gold and sealed with a brass lid. It changes a room the moment the lid lifts.",
+    "story": "Royal Oud is built on a Cambodian oud accord with the honeyed, slightly fruity character prized in Gulf perfumery, polished with Taif rose and a long amber base. Thirty-six hours of maceration before every pour.",
+    "notes": { "top": ["Saffron", "Bergamot"], "heart": ["Cambodian oud", "Taif rose"], "base": ["Amber", "Sandalwood", "Musk"] },
+    "moods": ["Regal", "Opulent", "Ceremonial"], "rooms": ["Living room", "Formal dining"],
+    "price": 3999, "rating": 5.0, "reviewCount": 142, "badges": ["Signature"], "featured": true, "stock": 12,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "240 g", "burnTime": "55–60 h", "price": 3999 },
+      { "id": "grand", "label": "Grand", "weight": "480 g", "burnTime": "100–110 h", "price": 6499 }
+    ],
+    "vessel": { "type": "marble", "color": "#f1ece4", "veins": "#c9a24a", "wax": "#f5ead7", "lid": "gold", "labelBg": "#fbf8f2", "labelText": "#2d2016", "accent": "#c9a24a", "glow": "#ffc784" },
+    "image": "/images/products/royal-oud.jpg"
+  },
+  {
+    "id": "lux-02", "slug": "gulab-and-oud", "name": "Gulab & Oud", "collection": "luxury", "family": "floral",
+    "tagline": "Indian gulab rose over smoky oud and saffron.",
+    "description": "A love letter to the Indian wedding. Rich gulab — the rose of garlands and rosewater — meets a smoky oud in a deep garnet vessel trimmed in gold. Lush, nostalgic, unforgettable.",
+    "story": "Gulab & Oud pairs Rosa damascena from Kannauj, the perfume capital of India, with a smoky Assam oud. It is the scent of mehendi nights and silk saris — our most-gifted luxury candle.",
+    "notes": { "top": ["Saffron", "Cardamom"], "heart": ["Gulab rose", "Jasmine"], "base": ["Oud", "Sandalwood", "Amber"] },
+    "moods": ["Festive", "Nostalgic", "Romantic"], "rooms": ["Living room", "Bedroom"],
+    "price": 3799, "rating": 4.9, "reviewCount": 118, "badges": ["Bestseller"], "featured": true, "stock": 14,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "240 g", "burnTime": "55–60 h", "price": 3799 },
+      { "id": "grand", "label": "Grand", "weight": "480 g", "burnTime": "100–110 h", "price": 6199 }
+    ],
+    "vessel": { "type": "matte", "color": "#5a1418", "wax": "#f0dccd", "lid": "gold", "labelBg": "#4a0f14", "labelText": "#f0d9a0", "accent": "#d9b162", "glow": "#ff9a8a" },
+    "image": "/images/products/gulab-and-oud.jpg"
+  },
+  {
+    "id": "lux-03", "slug": "midnight-bloom", "name": "Midnight Bloom", "collection": "luxury", "family": "floral",
+    "tagline": "Tuberose, black orchid and incense in black marble.",
+    "description": "Flowers that open only after dark. Narcotic tuberose and black orchid wrapped in incense smoke, in a black marble vessel shot through with gold. Dramatic, nocturnal, addictive.",
+    "story": "Composed around a tuberose absolute and a resinous frankincense, Midnight Bloom is what a greenhouse would smell like at midnight if someone lit incense in it.",
+    "notes": { "top": ["Blackcurrant", "Pink pepper"], "heart": ["Tuberose", "Black orchid"], "base": ["Incense", "Benzoin", "Dark musk"] },
+    "moods": ["Dramatic", "Nocturnal", "Seductive"], "rooms": ["Bedroom", "Lounge"],
+    "price": 3999, "rating": 4.9, "reviewCount": 96, "badges": [], "featured": false, "stock": 10,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "240 g", "burnTime": "55–60 h", "price": 3999 },
+      { "id": "grand", "label": "Grand", "weight": "480 g", "burnTime": "100–110 h", "price": 6499 }
+    ],
+    "vessel": { "type": "marble", "color": "#17120f", "veins": "#c9a24a", "wax": "#efe3d1", "lid": "gold", "labelBg": "#120d0b", "labelText": "#e8cf8a", "accent": "#d2ad5c", "glow": "#ffb070" },
+    "image": "/images/products/midnight-bloom.jpg"
+  },
+  {
+    "id": "lux-04", "slug": "sacred-sandal", "name": "Sacred Sandal", "collection": "luxury", "family": "woody",
+    "tagline": "Temple sandalwood, frankincense and milk.",
+    "description": "Serene and devotional. True sandalwood as it is used in temples — creamy, resinous, almost sweet — lifted with frankincense and a soft milky accord in white marble with gold veining.",
+    "story": "Sacred Sandal is poured with a higher proportion of sandalwood oil than anything else we make. It is the candle our founder lights every morning.",
+    "notes": { "top": ["Frankincense", "Cardamom"], "heart": ["Sandalwood", "Iris"], "base": ["Milk accord", "Amber", "Musk"] },
+    "moods": ["Serene", "Devotional", "Grounding"], "rooms": ["Prayer corner", "Study"],
+    "price": 3699, "rating": 4.9, "reviewCount": 110, "badges": [], "featured": false, "stock": 16,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "240 g", "burnTime": "55–60 h", "price": 3699 },
+      { "id": "grand", "label": "Grand", "weight": "480 g", "burnTime": "100–110 h", "price": 5999 }
+    ],
+    "vessel": { "type": "marble", "color": "#f4efe7", "veins": "#b9995a", "wax": "#f6ecd9", "lid": "gold", "labelBg": "#fbf8f2", "labelText": "#2d2016", "accent": "#c9a24a", "glow": "#ffd2a0" },
+    "image": "/images/products/sacred-sandal.jpg"
+  },
+  {
+    "id": "lux-05", "slug": "tea-and-bergamot", "name": "Tea & Bergamot", "collection": "luxury", "family": "citrus",
+    "tagline": "Earl Grey, bergamot and smoky lapsang in malachite.",
+    "description": "An afternoon in a very good hotel. Bergamot-bright Earl Grey, a wisp of smoky lapsang souchong and a honeyed base, in a malachite-green vessel with a brass lid.",
+    "story": "We steeped three teas into one accord — Darjeeling for brightness, Earl Grey for the bergamot, lapsang for smoke — then sweetened it with a trace of honey and fig.",
+    "notes": { "top": ["Bergamot", "Fig leaf"], "heart": ["Black tea", "Lapsang souchong"], "base": ["Honey", "Guaiac wood", "Musk"] },
+    "moods": ["Refined", "Calm", "Afternoon"], "rooms": ["Study", "Living room"],
+    "price": 3499, "rating": 4.8, "reviewCount": 84, "badges": ["New"], "featured": false, "stock": 18,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "240 g", "burnTime": "55–60 h", "price": 3499 },
+      { "id": "grand", "label": "Grand", "weight": "480 g", "burnTime": "100–110 h", "price": 5699 }
+    ],
+    "vessel": { "type": "marble", "color": "#17382c", "veins": "#4f8a6c", "wax": "#f1ead9", "lid": "gold", "labelBg": "#102a21", "labelText": "#e8cf8a", "accent": "#d2ad5c", "glow": "#d9ffb8" },
+    "image": "/images/products/tea-and-bergamot.jpg"
+  },
+  {
+    "id": "lux-06", "slug": "orchid-noir", "name": "Orchid Noir", "collection": "luxury", "family": "amber",
+    "tagline": "Black orchid, dark plum and smoked vanilla.",
+    "description": "Velvet in candle form. A dark, honeyed orchid over plum and smoked vanilla, poured into porcelain white with a black label and brass lid — the most-requested candle in our gifting studio.",
+    "story": "Orchid Noir balances a sweet, rummy plum against a cool orchid accord and a vanilla smoked over oak chips. It is NOORÉ at its most decadent.",
+    "notes": { "top": ["Dark plum", "Bergamot"], "heart": ["Black orchid", "Ylang-ylang"], "base": ["Smoked vanilla", "Patchouli", "Tonka"] },
+    "moods": ["Decadent", "Glamorous", "Celebratory"], "rooms": ["Living room", "Dressing room"],
+    "price": 4299, "rating": 5.0, "reviewCount": 73, "badges": ["Limited"], "featured": true, "stock": 8,
+    "sizes": [
+      { "id": "classic", "label": "Classic", "weight": "240 g", "burnTime": "55–60 h", "price": 4299 },
+      { "id": "grand", "label": "Grand", "weight": "480 g", "burnTime": "100–110 h", "price": 6999 }
+    ],
+    "vessel": { "type": "porcelain", "color": "#f6f1ea", "wax": "#f3e6d2", "lid": "gold", "labelBg": "#15100d", "labelText": "#e8cf8a", "accent": "#c9a24a", "glow": "#ffbf8a" },
+    "image": "/images/products/orchid-noir.jpg"
+  },
+
+  {
+    "id": "gift-01", "slug": "the-essentials-trio", "name": "The Essentials Trio", "collection": "gifting", "family": "set", "kind": "set",
+    "tagline": "Three Essentials in a ribboned linen box.",
+    "description": "Vanilla Bliss, Lavender Fields and Citrus Zest — morning, noon and night — nestled in our linen-textured gift box with a satin ribbon and a hand-written card.",
+    "story": "Our most-loved housewarming gift. Three everyday scents that cover every room and every mood.",
+    "includes": ["vanilla-bliss", "lavender-fields", "citrus-zest"],
+    "notes": { "top": ["Citrus Zest"], "heart": ["Lavender Fields"], "base": ["Vanilla Bliss"] },
+    "moods": ["Housewarming", "Thank you", "Just because"], "rooms": ["Every room"],
+    "price": 2499, "rating": 4.9, "reviewCount": 64, "badges": ["Gift"], "featured": true, "stock": 30,
+    "sizes": [ { "id": "set", "label": "Set of 3", "weight": "3 × 200 g", "burnTime": "3 × 42–45 h", "price": 2499 } ],
+    "vessel": { "type": "porcelain", "color": "#f3eee6", "wax": "#f6eddc", "lid": "none", "labelBg": "#fbf8f2", "labelText": "#3a2a1e", "accent": "#cfae62", "glow": "#ffcf96" },
+    "image": "/images/banners/gifting.jpg"
+  },
+  {
+    "id": "gift-02", "slug": "the-premium-duo", "name": "The Premium Duo", "collection": "gifting", "family": "set", "kind": "set",
+    "tagline": "Amber & Saffron with Oud & Oak, boxed.",
+    "description": "Our two signature Premium candles — one golden, one dark — in a rigid gift box with brass snuffer. The gift for the person who already has everything.",
+    "story": "Light them together: the saffron lifts the oud, the oud deepens the amber. A pairing we discovered by accident in the studio and now give to everyone.",
+    "includes": ["amber-and-saffron", "oud-and-oak"],
+    "notes": { "top": ["Amber & Saffron"], "heart": ["Brass snuffer"], "base": ["Oud & Oak"] },
+    "moods": ["Anniversary", "Diwali", "Host gift"], "rooms": ["Living room"],
+    "price": 3499, "rating": 4.9, "reviewCount": 41, "badges": ["Gift"], "featured": false, "stock": 20,
+    "sizes": [ { "id": "set", "label": "Set of 2 + snuffer", "weight": "2 × 220 g", "burnTime": "2 × 48–52 h", "price": 3499 } ],
+    "vessel": { "type": "glass", "color": "#d98a3a", "wax": "#f4dfb7", "lid": "gold", "labelBg": "#f6ead3", "labelText": "#4a2a10", "accent": "#d9b162", "glow": "#ffb15c" },
+    "image": "/images/banners/signature-space.jpg"
+  },
+  {
+    "id": "gift-03", "slug": "the-luxury-signature-box", "name": "The Luxury Signature Box", "collection": "gifting", "family": "set", "kind": "set",
+    "tagline": "Royal Oud, Gulab & Oud and Orchid Noir with matches and snuffer.",
+    "description": "Three Luxury candles in marble and porcelain, a brass wick trimmer and snuffer, and a box of long matches, presented in our black lacquer gifting chest. The ultimate NOORÉ gift.",
+    "story": "Assembled by hand in our gifting studio, each box is finished with a gold-foiled card and a wax seal. Corporate quantities and engraving available on request.",
+    "includes": ["royal-oud", "gulab-and-oud", "orchid-noir"],
+    "notes": { "top": ["Royal Oud"], "heart": ["Gulab & Oud"], "base": ["Orchid Noir"] },
+    "moods": ["Wedding", "Milestone", "Corporate"], "rooms": ["Every room"],
+    "price": 7999, "rating": 5.0, "reviewCount": 27, "badges": ["Gift", "Limited"], "featured": true, "stock": 10,
+    "sizes": [ { "id": "set", "label": "Set of 3 + tools", "weight": "3 × 240 g", "burnTime": "3 × 55–60 h", "price": 7999 } ],
+    "vessel": { "type": "marble", "color": "#f1ece4", "veins": "#c9a24a", "wax": "#f5ead7", "lid": "gold", "labelBg": "#fbf8f2", "labelText": "#2d2016", "accent": "#c9a24a", "glow": "#ffc784" },
+    "image": "/images/banners/corporate.jpg"
+  }
+]

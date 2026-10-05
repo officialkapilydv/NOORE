@@ -1,0 +1,16 @@
+node_modules
+**/node_modules
+client/dist
+server/data
+server/public/images/uploads/*
+!server/public/images/uploads/.gitkeep
+NOORE_Product_Catalog
+scripts
+.git
+.env
+*.log
+*.cmd
+README.md
+Dockerfile
+.dockerignore
+docker-compose*.yml

@@ -1,0 +1,72 @@
+[
+  {
+    "slug": "essentials",
+    "name": "Essentials",
+    "title": "Everyday fragrances for everyday moments",
+    "description": "Soft, familiar scents poured into pastel glass. The Essentials are made for the small rituals — the first coffee, the long bath, the slow Sunday.",
+    "tone": "light",
+    "color": "#efe3d2",
+    "accent": "#c9a24a",
+    "from": 549,
+    "image": "/images/banners/signature-space.jpg",
+    "specs": {
+      "wax": "Soy–coconut blend",
+      "wick": "Lead-free cotton",
+      "fragrance": "Phthalate-free fine fragrance oils",
+      "vessel": "Reusable coloured glass",
+      "origin": "Hand-poured in small batches"
+    }
+  },
+  {
+    "slug": "premium",
+    "name": "Premium",
+    "title": "Elevated fragrances for special moments",
+    "description": "Richer compositions in heavy tinted glass and speckled stone. Premium is for the evenings that deserve a little more — dinners, celebrations, quiet luxury.",
+    "tone": "amber",
+    "color": "#3a241a",
+    "accent": "#e2bd6f",
+    "from": 1699,
+    "image": "/images/banners/gifting.jpg",
+    "specs": {
+      "wax": "Soy–coconut blend with beeswax",
+      "wick": "Double cotton wick",
+      "fragrance": "Fine fragrance oils, 10% load",
+      "vessel": "Heavy tinted glass or speckled stone",
+      "origin": "Hand-poured in small batches"
+    }
+  },
+  {
+    "slug": "luxury",
+    "name": "Luxury",
+    "title": "Crafted for extraordinary moments",
+    "description": "Marble, malachite and gold. Our most precious oils — oud, saffron, Turkish rose — in vessels you will keep long after the last flame.",
+    "tone": "dark",
+    "color": "#120c09",
+    "accent": "#d7b56d",
+    "from": 3499,
+    "image": "/images/banners/moments.jpg",
+    "specs": {
+      "wax": "Coconut–apricot wax",
+      "wick": "Wooden crackle wick",
+      "fragrance": "Fine fragrance oils with natural absolutes, 12% load",
+      "vessel": "Marble-effect stoneware with brass lid",
+      "origin": "Hand-poured in small batches"
+    }
+  },
+  {
+    "slug": "gifting",
+    "name": "Gifting",
+    "title": "Thoughtful gifts for every occasion",
+    "description": "Curated sets in our signature ribboned boxes. For birthdays, weddings, housewarmings and the people who are hard to buy for.",
+    "tone": "amber",
+    "color": "#4a3327",
+    "accent": "#e2bd6f",
+    "from": 2499,
+    "image": "/images/banners/corporate.jpg",
+    "specs": {
+      "box": "Rigid linen-textured box with satin ribbon",
+      "card": "Hand-written gift note on request",
+      "origin": "Assembled to order"
+    }
+  }
+]

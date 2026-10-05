@@ -1,0 +1,72 @@
+{
+  "brand": {
+    "name": "NOORÉ",
+    "tagline": "Made to make moments.",
+    "description": "Hand-poured fragrance candles and gifting for every occasion. Small batches, fine oils, vessels worth keeping."
+  },
+  "contact": {
+    "email": "hello@noore.in",
+    "phone": "+91 98765 43210",
+    "whatsapp": "+91 98765 43210",
+    "hours": "Mon–Sat, 10am–7pm IST",
+    "supportNote": "A real person replies within one working day."
+  },
+  "address": {
+    "label": "The studio",
+    "line1": "14 Civil Lines",
+    "line2": "",
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "postalCode": "302006",
+    "country": "India",
+    "note": "Visits by appointment — come smell everything.",
+    "mapUrl": ""
+  },
+  "social": {
+    "instagram": "https://instagram.com/noore.candles",
+    "facebook": "",
+    "pinterest": "https://pinterest.com/noorecandles",
+    "youtube": "",
+    "x": "",
+    "whatsapp": "https://wa.me/919876543210"
+  },
+  "shipping": {
+    "freeOver": 1999,
+    "flat": 99,
+    "giftWrap": 149,
+    "dispatchDays": 2,
+    "deliveryDays": "3–6",
+    "returnsDays": 14
+  },
+  "announcement": {
+    "enabled": true,
+    "text": "Complimentary shipping over ₹1,999 · WELCOME10 for 10% off your first order",
+    "link": "/shop"
+  },
+  "home": {
+    "eyebrow": "Fragrance candles & gifting",
+    "title": "Made to make",
+    "titleItalic": "moments.",
+    "lead": "Hand-poured in small batches with fine fragrance oils. Three collections — Essentials, Premium and Luxury — for the everyday ritual and the extraordinary occasion.",
+    "primaryCta": "Explore the collection",
+    "secondaryCta": "Gifting",
+    "marquee": ["Made to make moments", "Hand-poured in small batches", "Soy–coconut wax", "Phthalate-free oils", "Complimentary shipping over ₹1,999", "Gift-wrapped on request"]
+  },
+  "seo": {
+    "title": "NOORÉ · Made to make moments.",
+    "description": "NOORÉ — hand-poured fragrance candles and gifting for every occasion. Essentials, Premium and Luxury collections."
+  },
+  "legal": {
+    "company": "NOORÉ Fragrances",
+    "gstin": "",
+    "footerNote": "Made with light in India"
+  },
+  "faq": [
+    { "q": "How long do NOORÉ candles burn?", "a": "Petite 18–20 hours, Classic 42–52 hours, Grand 80–110 hours depending on the collection. Trim the wick to 5 mm before each light for the cleanest, longest burn." },
+    { "q": "Why is my first burn important?", "a": "Wax has memory. Let the melt pool reach the edge of the vessel on the first burn (2–3 hours) and it will burn evenly for the rest of its life. Blow it out early and it may tunnel." },
+    { "q": "Shipping & delivery", "a": "Complimentary shipping on orders over ₹1,999; otherwise ₹99. Orders dispatch within 2 working days and arrive in 3–6 days across India. You'll receive a tracking link by email." },
+    { "q": "Returns & damages", "a": "Unlit candles can be returned within 14 days for a full refund. If anything arrives damaged, send us a photo within 48 hours and we'll replace it immediately — no need to send it back." },
+    { "q": "Are your candles vegan?", "a": "Yes. Soy–coconut and coconut–apricot waxes, cotton or wood wicks and phthalate-free oils. Premium candles contain a small amount of beeswax for a firmer set; if that matters to you, choose Essentials or Luxury." },
+    { "q": "Can I refill or reuse the vessel?", "a": "Please do. Freeze the vessel for an hour, pop out the remaining wax, wash with warm soapy water. Our marble and glass vessels make excellent planters, brush holders and catch-alls." }
+  ]
+}

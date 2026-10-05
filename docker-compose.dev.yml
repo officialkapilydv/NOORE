@@ -1,0 +1,38 @@
+# NOORÉ — development container with hot reload (edit files on Windows, see changes live).
+#
+#   docker compose -f docker-compose.dev.yml up -d      (or double-click start-noore-dev.cmd)
+#   Storefront  http://localhost:5173        Admin  http://localhost:5173/admin
+#
+# The API runs inside the same container; Vite proxies /api and /images to it, so only 5173 is
+# published and this can run side by side with the production container on 4000.
+# Source is bind-mounted; node_modules live in named volumes so Windows and Linux installs never mix.
+name: noore-dev
+
+services:
+  dev:
+    image: node:22-alpine
+    container_name: noore-dev
+    init: true
+    working_dir: /app
+    command: sh ./docker/dev.sh
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      CHOKIDAR_USEPOLLING: "1"
+      VITE_API_PROXY: http://127.0.0.1:4000
+      JWT_SECRET: ${JWT_SECRET:-noore-dev-secret}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@noore.in}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-noore-admin-2026}
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - noore-dev-node-modules:/app/node_modules
+      - noore-dev-client-modules:/app/client/node_modules
+      - noore-dev-server-modules:/app/server/node_modules
+    restart: unless-stopped
+
+volumes:
+  noore-dev-node-modules:
+  noore-dev-client-modules:
+  noore-dev-server-modules:

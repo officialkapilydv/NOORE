@@ -1,0 +1,24 @@
+{
+  "name": "noore",
+  "private": true,
+  "version": "1.0.0",
+  "description": "NOORÉ — luxury fragrance candles & gifting. Vite + React 3D storefront with a Node.js API.",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n API,WEB -c yellow,magenta \"npm:dev --workspace server\" \"npm:dev --workspace client\"",
+    "build": "npm run build --workspace client",
+    "start": "npm run start --workspace server",
+    "preview": "npm run preview --workspace client",
+    "test": "npm test --workspace server",
+    "images": "python scripts/prepare-images.py"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}

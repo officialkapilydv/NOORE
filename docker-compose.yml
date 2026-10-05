@@ -1,0 +1,37 @@
+# NOORÉ — one container: storefront + admin panel + API on http://localhost:4000
+#
+#   First time / after code changes:   docker compose up -d --build   (or double-click start-noore.cmd)
+#   Afterwards use Docker Desktop → Containers → "noore" ▶ / ■
+#
+# Settings can be overridden in a .env file next to this one (see .env.example).
+name: noore
+
+services:
+  noore:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: noore-storefront:latest
+    container_name: noore
+    init: true
+    ports:
+      - "${NOORE_PORT:-4000}:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      JWT_SECRET: ${JWT_SECRET:-noore-docker-secret-please-change}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@noore.in}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-noore-admin-2026}
+      ADMIN_NAME: ${ADMIN_NAME:-Studio admin}
+      ADMIN_KEY: ${ADMIN_KEY:-noore-admin}
+    volumes:
+      # orders, products, settings, pages, customers… (JSON store)
+      - noore-data:/app/server/data
+      # images uploaded through Admin → Media
+      - noore-uploads:/app/server/public/images/uploads
+    restart: unless-stopped
+
+volumes:
+  noore-data:
+  noore-uploads:

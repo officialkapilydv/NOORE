@@ -1,0 +1,6 @@
+# Keep line endings stable across Windows and the Linux containers.
+* text=auto
+*.sh  text eol=lf
+*.cmd text eol=crlf
+Dockerfile text eol=lf
+*.yml text eol=lf
