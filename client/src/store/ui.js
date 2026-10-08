@@ -11,6 +11,10 @@ export const useUI = create((set, get) => ({
     set({ preloaderDone: true });
   },
 
+  // False while a page-transition curtain is moving; heavy work (WebGL) waits for it.
+  pageSettled: true,
+  setPageSettled: (pageSettled) => set({ pageSettled }),
+
   menuOpen: false,
   setMenuOpen: (menuOpen) => set({ menuOpen }),
   searchOpen: false,

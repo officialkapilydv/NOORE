@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUI } from '@/store/ui';
 import { FlameMark } from '@/components/ui/Logo';
@@ -17,29 +17,35 @@ export function Preloader() {
   const fontsReady = useFontsReady();
   const [progress, setProgress] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  // Read through a ref so fonts arriving mid-count don't restart the loop (and the counter) from 0.
+  const fontsRef = useRef(fontsReady);
+  useEffect(() => { fontsRef.current = fontsReady; }, [fontsReady]);
 
   useEffect(() => {
     if (done) return;
     let raf;
+    let leaveTimer;
     const start = performance.now();
     const minDuration = 2300;
+    const maxFontWait = 4500; // never hold the site hostage to a slow font server
     const tick = (t) => {
       const elapsed = t - start;
       const base = Math.min(1, elapsed / minDuration);
+      const fontsOk = fontsRef.current || elapsed > maxFontWait;
       // slow near the end until fonts are ready, then snap to 100
-      const cap = fontsReady ? 1 : 0.92;
+      const cap = fontsOk ? 1 : 0.92;
       const eased = 1 - Math.pow(1 - base, 3);
       setProgress(Math.round(Math.min(cap, eased) * 100));
-      if (base >= 1 && fontsReady) {
+      if (base >= 1 && fontsOk) {
         setLeaving(true);
-        setTimeout(finish, 1100);
+        leaveTimer = setTimeout(finish, 1100);
         return;
       }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [done, fontsReady, finish]);
+    return () => { cancelAnimationFrame(raf); clearTimeout(leaveTimer); };
+  }, [done, finish]);
 
   return (
     <AnimatePresence>

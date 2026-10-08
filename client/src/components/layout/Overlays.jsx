@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
+import { useLenis } from 'lenis/react';
 import { useUI } from '@/store/ui';
 import { api, onOfflineChange, isOffline } from '@/lib/api';
 import { formatPrice, COLLECTION_LABEL } from '@/lib/format';
@@ -14,21 +15,40 @@ export function ScrollProgress() {
 }
 
 /* ─── Page transition curtain ─── */
+const CURTAIN_EASE = [0.76, 0, 0.24, 1];
+
 export function PageTransition({ children }) {
   const { pathname } = useLocation();
+  const lenis = useLenis();
+  const setPageSettled = useUI((s) => s.setPageSettled);
+
+  // The old page has left and the new one is still behind the curtain: reset scroll now, unseen.
+  const onExitComplete = () => {
+    setPageSettled(false);
+    if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
+    else window.scrollTo(0, 0);
+  };
+
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="wait" initial={false} onExitComplete={onExitComplete}>
       <motion.div key={pathname} className="page">
         <motion.div
           className="page__content"
           initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.35 } }}
-          exit={{ opacity: 0, y: -16, transition: { duration: 0.35, ease: [0.76, 0, 0.24, 1] } }}
+          animate={{ opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.25 } }}
+          exit={{ opacity: 0, y: -16, transition: { duration: 0.3, ease: CURTAIN_EASE } }}
         >
           {children}
         </motion.div>
-        <motion.div className="curtain curtain--a" initial={{ scaleY: 1 }} animate={{ scaleY: 0, transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1], delay: 0.05 } }} exit={{ scaleY: 1, transition: { duration: 0.55, ease: [0.76, 0, 0.24, 1] } }} style={{ originY: 0 }} />
-        <motion.div className="curtain curtain--b" initial={{ scaleY: 1 }} animate={{ scaleY: 0, transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1], delay: 0.15 } }} exit={{ scaleY: 1, transition: { duration: 0.55, ease: [0.76, 0, 0.24, 1], delay: 0.08 } }} style={{ originY: 0 }} />
+        <motion.div className="curtain curtain--a" initial={{ scaleY: 1 }} animate={{ scaleY: 0, transition: { duration: 0.7, ease: CURTAIN_EASE, delay: 0.05 } }} exit={{ scaleY: 1, transition: { duration: 0.45, ease: CURTAIN_EASE } }} style={{ originY: 0 }} />
+        <motion.div
+          className="curtain curtain--b"
+          initial={{ scaleY: 1 }}
+          animate={{ scaleY: 0, transition: { duration: 0.7, ease: CURTAIN_EASE, delay: 0.12 } }}
+          exit={{ scaleY: 1, transition: { duration: 0.45, ease: CURTAIN_EASE, delay: 0.06 } }}
+          onAnimationComplete={(def) => def?.scaleY === 0 && setPageSettled(true)}
+          style={{ originY: 0 }}
+        />
       </motion.div>
     </AnimatePresence>
   );

@@ -36,8 +36,13 @@ function setOffline(v) {
   offlineListeners.forEach((fn) => fn(v));
 }
 
+const READ_TIMEOUT = 12_000;
+
 export async function request(path, { method = 'GET', body, headers = {}, signal } = {}) {
   const token = getToken();
+  // A hung read would leave a page on its spinner forever; time it out so it falls back instead.
+  // Writes are left alone so a slow order is never silently retried.
+  if (!signal && method === 'GET' && typeof AbortSignal !== 'undefined' && AbortSignal.timeout) signal = AbortSignal.timeout(READ_TIMEOUT);
   let res;
   try {
     res = await fetch(`${BASE}${path}`, {

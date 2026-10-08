@@ -15,6 +15,8 @@ export function FeaturedCarousel({ title = <>Loved by <em>candlelight</em></>, e
   const x = useMotionValue(0);
   const sx = useSpring(x, { stiffness: 120, damping: 24 });
   const progress = useTransform(x, [0, -Math.max(bounds, 1)], [0, 1]);
+  // Releasing a drag over a card fires a click; swallow it so dragging never opens a product.
+  const dragged = useRef(false);
 
   useEffect(() => {
     const measure = () => {
@@ -43,7 +45,11 @@ export function FeaturedCarousel({ title = <>Loved by <em>candlelight</em></>, e
         </div>
       </div>
       <div className="featured__viewport" ref={viewport} data-cursor="drag" data-cursor-label="Drag">
-        <motion.div ref={track} className="featured__track" drag="x" dragConstraints={{ left: -bounds, right: 0 }} dragElastic={0.08} dragTransition={{ power: 0.25, timeConstant: 220 }} style={{ x: sx }} onDragEnd={() => x.set(sx.get())}>
+        <motion.div ref={track} className="featured__track" drag="x" dragConstraints={{ left: -bounds, right: 0 }} dragElastic={0.08} dragTransition={{ power: 0.25, timeConstant: 220 }} style={{ x: sx }}
+          onDragStart={() => { dragged.current = true; }}
+          onDragEnd={() => { x.set(sx.get()); setTimeout(() => { dragged.current = false; }, 0); }}
+          onClickCapture={(e) => { if (dragged.current) { e.preventDefault(); e.stopPropagation(); } }}
+        >
           {(loading && !items.length ? Array.from({ length: 4 }).map((_, i) => ({ placeholder: i })) : items).map((p, i) => (
             <div className="featured__item" key={p.slug || `ph-${i}`}>
               {p.slug ? <ProductCard product={p} index={i} layout={false} /> : <div className="pcard"><div className="pcard__media skeleton" /></div>}

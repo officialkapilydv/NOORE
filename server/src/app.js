@@ -59,9 +59,20 @@ export function createApp() {
   app.use('/api/admin', adminRouter);
 
   // Production: serve the built storefront + admin from the same origin (SPA fallback)
+  // index.html is never cached (a stale copy points at chunks a rebuild has deleted, and the page
+  // hangs); the content-hashed files in /assets can be cached forever.
   if (fs.existsSync(path.join(config.paths.clientDist, 'index.html'))) {
-    app.use(express.static(config.paths.clientDist, { maxAge: '1h' }));
-    app.get(/^\/(?!api\/|images\/|assets\/).*/, (req, res) => res.sendFile(path.join(config.paths.clientDist, 'index.html')));
+    app.use(express.static(config.paths.clientDist, {
+      maxAge: '1h',
+      setHeaders(res, filePath) {
+        if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
+        else if (filePath.includes(`${path.sep}assets${path.sep}`)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      },
+    }));
+    app.get(/^\/(?!api\/|images\/|assets\/).*/, (req, res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.sendFile(path.join(config.paths.clientDist, 'index.html'));
+    });
   }
 
   app.use('/api', notFound);

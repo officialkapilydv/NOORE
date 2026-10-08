@@ -39,11 +39,15 @@ export default defineConfig({
     chunkSizeWarningLimit: 1400,
     rollupOptions: {
       output: {
-        manualChunks: {
-          three: ['three'],
-          r3f: ['@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
-          motion: ['framer-motion'],
-          vendor: ['react', 'react-dom', 'react-router-dom', 'zustand', 'lenis'],
+        // Function form so Vite's dynamic-import helper can be pinned to vendor. The object form let
+        // it land in r3f, which made every page download three.js + r3f (~1.3 MB) before rendering.
+        manualChunks(id) {
+          if (id.includes('vite/preload-helper')) return 'vendor';
+          if (/[\\/]node_modules[\\/]three[\\/]/.test(id)) return 'three';
+          if (/[\\/]node_modules[\\/]@react-three[\\/]/.test(id)) return 'r3f';
+          if (/[\\/]node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/.test(id)) return 'motion';
+          if (/[\\/]node_modules[\\/](react|react-dom|scheduler|react-router|react-router-dom|zustand|lenis)[\\/]/.test(id)) return 'vendor';
+          return undefined;
         },
       },
     },
