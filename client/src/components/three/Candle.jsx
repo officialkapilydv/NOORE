@@ -154,7 +154,7 @@ export function Candle({
       )}
 
       {/* flame */}
-      {flameOn && <Flame position={[0, waxTop + 0.1, 0]} glow={vessel.glow} scale={flameScale} lightIntensity={lightIntensity} castLight={castLight} />}
+      {(flameOn || castLight) && <Flame position={[0, waxTop + 0.1, 0]} glow={vessel.glow} scale={flameScale} lightIntensity={lightIntensity} castLight={castLight} on={flameOn} />}
     </group>
   );
 }

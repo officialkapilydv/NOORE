@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { api } from '@/lib/api';
@@ -13,13 +13,20 @@ import { CandleThumb } from '@/components/shop/CandleThumb';
 import { useSettings } from '@/store/settings';
 
 const STEPS = ['Delivery', 'Payment', 'Review'];
-const STATES = ['Andhra Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Odisha', 'Punjab', 'Rajasthan', 'Tamil Nadu', 'Telangana', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'];
+// All 28 states and 8 union territories — we deliver across India.
+const STATES = [
+  'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh',
+  'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir',
+  'Jharkhand', 'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya',
+  'Mizoram', 'Nagaland', 'Odisha', 'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
+  'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+];
 
 export default function Checkout() {
   usePageTitle('Checkout');
   const navigate = useNavigate();
   const toast = useUI((s) => s.toast);
-  const { items, couponCode, giftWrap, setCoupon, setGiftWrap, setQuantity, remove, clear } = useCart();
+  const { items, couponCode, giftWrap, setCoupon, setGiftWrap, setQuantity, remove, clear, syncLines } = useCart();
   const user = useAuth((s) => s.user);
   const shippingCfg = useSettings((s) => s.settings.shipping);
   const [step, setStep] = useState(0);
@@ -27,24 +34,51 @@ export default function Checkout() {
   const [payment, setPayment] = useState({ method: 'card', number: '', expiry: '', cvc: '', upi: '' });
   const [errors, setErrors] = useState({});
   const [pricing, setPricing] = useState(null);
+  const [pricedFor, setPricedFor] = useState('');
+  const [pricingIssue, setPricingIssue] = useState(null);
+  const [retry, setRetry] = useState(0);
   const [couponInput, setCouponInput] = useState(couponCode || '');
   const [couponError, setCouponError] = useState('');
   const [placing, setPlacing] = useState(false);
+  const focusStep = useRef(false);
 
   const payload = useMemo(() => items.map((i) => ({ slug: i.slug, sizeId: i.sizeId, quantity: i.quantity })), [items]);
+  // What the current total must answer for; a total priced for anything else is stale.
+  const priceKey = JSON.stringify([payload, couponCode || null, giftWrap]);
+  const priced = Boolean(pricing) && pricedFor === priceKey;
 
   useEffect(() => {
     if (!items.length) { setPricing(null); return; }
+    let current = true; // ignore answers to superseded requests (they can arrive out of order)
+    setPricingIssue(null);
     const t = setTimeout(() => {
       api.priceCart({ items: payload, couponCode: couponCode || null, giftWrap })
-        .then((p) => { setPricing(p); setCouponError(''); })
+        .then((p) => {
+          if (!current) return;
+          setPricing(p);
+          setPricedFor(priceKey);
+          setCouponError('');
+          syncLines(p.lines);
+        })
         .catch((err) => {
-          if (couponCode) { setCouponError(err.message); setCoupon(''); } else toast(err.message, { type: 'error' });
+          if (!current) return;
+          // Only a problem with the code itself drops the code; stock or network trouble keeps it.
+          if (couponCode && err.payload?.field === 'coupon') { setCouponError(err.message); setCoupon(''); return; }
+          setPricingIssue({ message: err.message, slug: err.payload?.slug });
         });
     }, 150);
-    return () => clearTimeout(t);
+    return () => { current = false; clearTimeout(t); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [payload, couponCode, giftWrap]);
+  }, [priceKey, retry]);
+
+  const goTo = (n) => { focusStep.current = true; setStep(n); };
+  // Each step replaces the panel (and the button that had focus); take focus to the new heading.
+  const onPanelShown = () => {
+    if (!focusStep.current) return;
+    focusStep.current = false;
+    document.querySelector('.checkout__panel h2')?.focus();
+  };
+  const focusFirstError = () => requestAnimationFrame(() => document.querySelector('.checkout__panel [aria-invalid="true"]')?.focus());
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -57,6 +91,7 @@ export default function Checkout() {
     if (form.city.trim().length < 2) e.city = 'Please enter a city.';
     if (!/^[0-9]{6}$/.test(form.postalCode)) e.postalCode = 'Enter a 6-digit PIN code.';
     setErrors(e);
+    if (Object.keys(e).length) focusFirstError();
     return Object.keys(e).length === 0;
   };
   const validatePayment = () => {
@@ -68,13 +103,14 @@ export default function Checkout() {
     }
     if (payment.method === 'upi' && !/^[\w.-]+@[\w]+$/.test(payment.upi)) e.upi = 'Enter a valid UPI ID, e.g. name@bank';
     setErrors(e);
+    if (Object.keys(e).length) focusFirstError();
     return Object.keys(e).length === 0;
   };
 
   const next = () => {
     if (step === 0 && !validateDelivery()) return;
     if (step === 1 && !validatePayment()) return;
-    setStep((s) => Math.min(2, s + 1));
+    goTo(Math.min(2, step + 1));
   };
 
   const applyCoupon = () => {
@@ -83,6 +119,7 @@ export default function Checkout() {
   };
 
   const place = async () => {
+    if (!priced) return;
     setPlacing(true);
     try {
       const order = await api.placeOrder({
@@ -102,7 +139,7 @@ export default function Checkout() {
     } catch (err) {
       if (err.payload?.issues) {
         setErrors(Object.fromEntries(err.payload.issues.map((i) => [i.path.replace('shipping.', ''), i.message])));
-        setStep(0);
+        goTo(0);
       }
       toast(err.message, { type: 'error', duration: 5000 });
     } finally {
@@ -128,31 +165,33 @@ export default function Checkout() {
           <header className="checkout__head">
             <p className="eyebrow">Checkout</p>
             <ol className="steps">
-              {STEPS.map((s, i) => (
-                <li key={s} className={`${i === step ? 'is-active' : ''} ${i < step ? 'is-done' : ''}`} onClick={() => i < step && setStep(i)}>
-                  <span className="steps__n">{i < step ? '✓' : i + 1}</span>
-                  <span>{s}</span>
-                </li>
-              ))}
+              {STEPS.map((s, i) => {
+                const inner = <><span className="steps__n" aria-hidden="true">{i < step ? '✓' : i + 1}</span><span>{s}</span></>;
+                return (
+                  <li key={s} className={`${i === step ? 'is-active' : ''} ${i < step ? 'is-done' : ''}`} aria-current={i === step ? 'step' : undefined}>
+                    {i < step ? <button type="button" className="steps__btn" onClick={() => goTo(i)} aria-label={`${s} (completed) — edit`}>{inner}</button> : inner}
+                  </li>
+                );
+              })}
             </ol>
           </header>
 
           <AnimatePresence mode="wait">
             {step === 0 && (
-              <motion.section key="delivery" className="checkout__panel" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
-                <h2 className="display">Where should the <em>light</em> go?</h2>
+              <motion.section key="delivery" className="checkout__panel" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} onAnimationComplete={(d) => d?.x === 0 && onPanelShown()}>
+                <h2 className="display" tabIndex={-1}>Where should the <em>light</em> go?</h2>
                 {!user && <p className="muted small">Have an account? <Link to="/account" className="gold">Sign in</Link> for faster checkout.</p>}
                 <div className="form-grid">
-                  <Field label="Email" name="email" type="email" value={form.email} onChange={set('email')} error={errors.email} className="span-2" />
-                  <Field label="Full name" name="fullName" value={form.fullName} onChange={set('fullName')} error={errors.fullName} />
-                  <Field label="Phone" name="phone" value={form.phone} onChange={set('phone')} error={errors.phone} />
-                  <Field label="Address" name="line1" value={form.line1} onChange={set('line1')} error={errors.line1} className="span-2" />
-                  <Field label="Apartment, landmark (optional)" name="line2" value={form.line2} onChange={set('line2')} className="span-2" />
-                  <Field label="City" name="city" value={form.city} onChange={set('city')} error={errors.city} />
-                  <Field label="PIN code" name="postalCode" value={form.postalCode} onChange={set('postalCode')} error={errors.postalCode} inputMode="numeric" />
+                  <Field label="Email" name="email" type="email" autoComplete="email" required value={form.email} onChange={set('email')} error={errors.email} className="span-2" />
+                  <Field label="Full name" name="fullName" autoComplete="name" required value={form.fullName} onChange={set('fullName')} error={errors.fullName} />
+                  <Field label="Phone" name="phone" type="tel" autoComplete="tel" required value={form.phone} onChange={set('phone')} error={errors.phone} />
+                  <Field label="Address" name="line1" autoComplete="address-line1" required value={form.line1} onChange={set('line1')} error={errors.line1} className="span-2" />
+                  <Field label="Apartment, landmark (optional)" name="line2" autoComplete="address-line2" value={form.line2} onChange={set('line2')} className="span-2" />
+                  <Field label="City" name="city" autoComplete="address-level2" required value={form.city} onChange={set('city')} error={errors.city} />
+                  <Field label="PIN code" name="postalCode" autoComplete="postal-code" required maxLength={6} value={form.postalCode} onChange={set('postalCode')} error={errors.postalCode} inputMode="numeric" />
                   <label className="field span-2" htmlFor="state">
                     <span className="field__label">State</span>
-                    <div className="select"><select id="state" value={form.state} onChange={set('state')}>{STATES.map((s) => <option key={s}>{s}</option>)}</select></div>
+                    <div className="select"><select id="state" autoComplete="address-level1" value={form.state} onChange={set('state')}>{STATES.map((s) => <option key={s}>{s}</option>)}</select></div>
                   </label>
                 </div>
                 <div className="checkout__gift">
@@ -170,11 +209,11 @@ export default function Checkout() {
             )}
 
             {step === 1 && (
-              <motion.section key="payment" className="checkout__panel" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
-                <h2 className="display">How would you like to <em>pay?</em></h2>
+              <motion.section key="payment" className="checkout__panel" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} onAnimationComplete={(d) => d?.x === 0 && onPanelShown()}>
+                <h2 className="display" tabIndex={-1}>How would you like to <em>pay?</em></h2>
                 <div className="pay-methods">
                   {[['card', 'Card', 'Visa, Mastercard, RuPay, Amex'], ['upi', 'UPI', 'GPay, PhonePe, Paytm'], ['cod', 'Cash on delivery', 'Pay when it arrives']].map(([id, label, note]) => (
-                    <button key={id} type="button" className={`pay ${payment.method === id ? 'is-active' : ''}`} onClick={() => setPayment({ ...payment, method: id })}>
+                    <button key={id} type="button" className={`pay ${payment.method === id ? 'is-active' : ''}`} aria-pressed={payment.method === id} onClick={() => setPayment({ ...payment, method: id })}>
                       {payment.method === id && <motion.span layoutId="pay-bg" className="pay__bg" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
                       <span className="pay__label">{label}</span>
                       <span className="pay__note small">{note}</span>
@@ -184,9 +223,9 @@ export default function Checkout() {
                 <AnimatePresence mode="wait">
                   {payment.method === 'card' && (
                     <motion.div key="card" className="form-grid" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                      <Field label="Card number" name="number" inputMode="numeric" placeholder="4242 4242 4242 4242" value={payment.number} onChange={(e) => setPayment({ ...payment, number: e.target.value.replace(/[^\d]/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ') })} error={errors.number} className="span-2" hint="Demo gateway — any number works; ending 0000 is declined." />
-                      <Field label="Expiry" name="expiry" placeholder="MM/YY" value={payment.expiry} onChange={(e) => setPayment({ ...payment, expiry: e.target.value.replace(/[^\d]/g, '').slice(0, 4).replace(/(\d{2})(?=\d)/, '$1/') })} error={errors.expiry} />
-                      <Field label="CVC" name="cvc" inputMode="numeric" value={payment.cvc} onChange={(e) => setPayment({ ...payment, cvc: e.target.value.replace(/[^\d]/g, '').slice(0, 4) })} error={errors.cvc} />
+                      <Field label="Card number" name="number" autoComplete="cc-number" inputMode="numeric" placeholder="4242 4242 4242 4242" value={payment.number} onChange={(e) => setPayment({ ...payment, number: e.target.value.replace(/[^\d]/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ') })} error={errors.number} className="span-2" hint="Demo gateway — any number works; ending 0000 is declined." />
+                      <Field label="Expiry" name="expiry" autoComplete="cc-exp" inputMode="numeric" placeholder="MM/YY" value={payment.expiry} onChange={(e) => setPayment({ ...payment, expiry: e.target.value.replace(/[^\d]/g, '').slice(0, 4).replace(/(\d{2})(?=\d)/, '$1/') })} error={errors.expiry} />
+                      <Field label="CVC" name="cvc" autoComplete="cc-csc" inputMode="numeric" value={payment.cvc} onChange={(e) => setPayment({ ...payment, cvc: e.target.value.replace(/[^\d]/g, '').slice(0, 4) })} error={errors.cvc} />
                     </motion.div>
                   )}
                   {payment.method === 'upi' && (
@@ -197,25 +236,25 @@ export default function Checkout() {
                   {payment.method === 'cod' && <motion.p key="cod" className="muted" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Pay in cash or by UPI when your order arrives. Available across India.</motion.p>}
                 </AnimatePresence>
                 <div className="checkout__actions">
-                  <Button variant="ghost" onClick={() => setStep(0)} magnetic={false}>Back</Button>
+                  <Button variant="ghost" onClick={() => goTo(0)} magnetic={false}>Back</Button>
                   <Button variant="gold" size="lg" onClick={next} magnetic={false} arrow>Review order</Button>
                 </div>
               </motion.section>
             )}
 
             {step === 2 && (
-              <motion.section key="review" className="checkout__panel" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
-                <h2 className="display">One last <em>look</em></h2>
+              <motion.section key="review" className="checkout__panel" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} onAnimationComplete={(d) => d?.x === 0 && onPanelShown()}>
+                <h2 className="display" tabIndex={-1}>One last <em>look</em></h2>
                 <div className="review-grid">
                   <div className="review-block">
                     <p className="caps faint">Deliver to</p>
                     <p><strong>{form.fullName}</strong><br />{form.line1}{form.line2 && <>, {form.line2}</>}<br />{form.city}, {form.state} {form.postalCode}<br />{form.phone} · {form.email}</p>
-                    <button className="link" onClick={() => setStep(0)}>Edit</button>
+                    <button className="link" onClick={() => goTo(0)}>Edit</button>
                   </div>
                   <div className="review-block">
                     <p className="caps faint">Payment</p>
                     <p><strong>{payment.method === 'card' ? `Card ending ${payment.number.replace(/\s/g, '').slice(-4)}` : payment.method === 'upi' ? `UPI · ${payment.upi}` : 'Cash on delivery'}</strong></p>
-                    <button className="link" onClick={() => setStep(1)}>Edit</button>
+                    <button className="link" onClick={() => goTo(1)}>Edit</button>
                   </div>
                   {giftWrap && (
                     <div className="review-block span-2">
@@ -226,8 +265,8 @@ export default function Checkout() {
                 </div>
                 <Field label="Delivery notes (optional)" name="notes" as="textarea" rows={2} value={form.notes} onChange={set('notes')} />
                 <div className="checkout__actions">
-                  <Button variant="ghost" onClick={() => setStep(1)} magnetic={false}>Back</Button>
-                  <Button variant="gold" size="lg" onClick={place} loading={placing} magnetic={false} arrow>Place order · {formatPrice(pricing?.total ?? 0)}</Button>
+                  <Button variant="ghost" onClick={() => goTo(1)} magnetic={false}>Back</Button>
+                  <Button variant="gold" size="lg" onClick={place} loading={placing} disabled={!priced} magnetic={false} arrow>{priced ? `Place order · ${formatPrice(pricing.total)}` : pricingIssue?.slug ? 'Fix your bag to continue' : pricingIssue ? 'Total unavailable — try again' : 'Updating total…'}</Button>
                 </div>
                 <p className="faint small">By placing this order you agree to our terms. Demo store — no real payment is taken.</p>
               </motion.section>
@@ -244,9 +283,10 @@ export default function Checkout() {
                 <div className="summary__info">
                   <span>{i.name}</span>
                   <span className="faint small">{i.sizeLabel}</span>
-                  <div className="summary__row"><Stepper size="sm" value={i.quantity} onChange={(q) => setQuantity(i.key, q)} /><button className="link small" onClick={() => remove(i.key)}>Remove</button></div>
+                  <div className="summary__row"><Stepper size="sm" value={i.quantity} onChange={(q) => setQuantity(i.key, q)} label={`Quantity, ${i.name}`} /><button className="link small" onClick={() => remove(i.key)}>Remove</button></div>
                 </div>
                 <span className="summary__price">{formatPrice(i.unitPrice * i.quantity)}</span>
+                {pricingIssue?.slug === i.slug && <p className="field__error summary__issue" role="alert">{pricingIssue.message}</p>}
               </li>
             ))}
           </ul>
@@ -258,12 +298,15 @@ export default function Checkout() {
             {couponError && <motion.p className="field__error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>{couponError}</motion.p>}
             {pricing?.coupon && <motion.p className="coupon__ok small" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>✦ {pricing.coupon.label} <button className="link" onClick={() => { setCoupon(''); setCouponInput(''); }}>remove</button></motion.p>}
           </AnimatePresence>
+          {pricingIssue && !pricingIssue.slug && (
+            <p className="field__error" role="alert">{pricingIssue.message} <button type="button" className="link" onClick={() => setRetry((n) => n + 1)}>Try again</button></p>
+          )}
           <div className="summary__totals">
-            <div><span className="muted">Subtotal</span><span>{formatPrice(pricing?.subtotal ?? items.reduce((n, i) => n + i.unitPrice * i.quantity, 0))}</span></div>
-            {pricing?.discount > 0 && <div className="gold"><span>Discount</span><span>− {formatPrice(pricing.discount)}</span></div>}
-            <div><span className="muted">Shipping</span><span>{pricing ? (pricing.shipping === 0 ? 'Complimentary' : formatPrice(pricing.shipping)) : '—'}</span></div>
+            <div><span className="muted">Subtotal</span><span>{formatPrice(priced ? pricing.subtotal : items.reduce((n, i) => n + i.unitPrice * i.quantity, 0))}</span></div>
+            {priced && pricing.discount > 0 && <div className="gold"><span>Discount</span><span>− {formatPrice(pricing.discount)}</span></div>}
+            <div><span className="muted">Shipping</span><span>{priced ? (pricing.shipping === 0 ? 'Complimentary' : formatPrice(pricing.shipping)) : '—'}</span></div>
             {giftWrap && <div><span className="muted">Gift wrap</span><span>{formatPrice(pricing?.giftWrapFee ?? shippingCfg?.giftWrap ?? 149)}</span></div>}
-            <div className="summary__grand"><span>Total</span><span>{formatPrice(pricing?.total ?? 0)}</span></div>
+            <div className="summary__grand"><span>Total</span><span>{priced ? formatPrice(pricing.total) : '—'}</span></div>
           </div>
           <p className="faint small">Try <code>WELCOME10</code>, <code>NOORE15</code> (Luxury), <code>FREESHIP</code> or <code>GIFT500</code>.</p>
         </aside>

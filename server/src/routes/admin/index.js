@@ -72,16 +72,19 @@ router.delete('/admins/:id', async (req, res) => {
 /* ─── Dashboard ─── */
 router.get('/overview', async (req, res) => {
   const orders = await collection('orders').all();
-  const paid = orders.filter((o) => o.payment?.status === 'paid' || o.status === 'delivered');
+  // Cancelled and refunded orders count as orders, but not as money in.
+  const live = orders.filter((o) => !['cancelled', 'refunded'].includes(o.status));
+  const paid = live.filter((o) => o.payment?.status === 'paid' || o.status === 'delivered');
   const since = (days) => new Date(Date.now() - days * 86_400_000).toISOString();
   const last30 = orders.filter((o) => o.createdAt >= since(30));
+  const liveLast30 = live.filter((o) => o.createdAt >= since(30));
   const products = catalog.products({ includeUnpublished: true });
   const byDay = {};
   for (const o of last30) {
     const day = o.createdAt.slice(0, 10);
     byDay[day] = byDay[day] || { day, orders: 0, revenue: 0 };
     byDay[day].orders += 1;
-    byDay[day].revenue += o.total;
+    if (!['cancelled', 'refunded'].includes(o.status)) byDay[day].revenue += o.total;
   }
   const bestsellers = {};
   for (const o of orders) for (const l of o.lines) {
@@ -94,8 +97,8 @@ router.get('/overview', async (req, res) => {
       orders: orders.length,
       ordersLast30: last30.length,
       revenue: paid.reduce((s, o) => s + o.total, 0),
-      revenueLast30: last30.reduce((s, o) => s + o.total, 0),
-      averageOrder: orders.length ? Math.round(orders.reduce((s, o) => s + o.total, 0) / orders.length) : 0,
+      revenueLast30: liveLast30.reduce((s, o) => s + o.total, 0),
+      averageOrder: live.length ? Math.round(live.reduce((s, o) => s + o.total, 0) / live.length) : 0,
       pendingOrders: orders.filter((o) => ['placed', 'confirmed', 'packed'].includes(o.status)).length,
       subscribers: await collection('newsletter').count(),
       enquiries: await collection('enquiries').count((e) => e.status === 'new'),
@@ -109,7 +112,7 @@ router.get('/overview', async (req, res) => {
     lowStock: products.filter((p) => p.stock <= 10).sort((a, b) => a.stock - b.stock).slice(0, 8).map((p) => ({ slug: p.slug, name: p.name, stock: p.stock, collection: p.collection, vessel: p.vessel })),
     salesByDay: Object.values(byDay).sort((a, b) => a.day.localeCompare(b.day)),
     bestsellers: Object.values(bestsellers).sort((a, b) => b.units - a.units).slice(0, 6),
-    env: { adminKeyConfigured: config.adminKey !== 'noore-admin' },
+    env: { adminKeyConfigured: Boolean(config.adminKey) && config.adminKey !== 'noore-admin' },
   });
 });
 

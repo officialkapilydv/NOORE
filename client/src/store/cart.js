@@ -45,6 +45,19 @@ export const useCart = create(
           items: quantity <= 0 ? s.items.filter((i) => i.key !== key) : s.items.map((i) => (i.key === key ? { ...i, quantity: Math.min(10, quantity) } : i)),
         })),
       remove: (key) => set((s) => ({ items: s.items.filter((i) => i.key !== key) })),
+      // The server's price list wins: refresh each remembered line after a successful price check,
+      // so an admin price change can't leave the bag showing one figure and charging another.
+      syncLines: (lines = []) =>
+        set((s) => {
+          let changed = false;
+          const items = s.items.map((i) => {
+            const l = lines.find((x) => x.slug === i.slug && x.sizeId === i.sizeId);
+            if (!l || (l.unitPrice === i.unitPrice && l.name === i.name && l.sizeLabel === i.sizeLabel)) return i;
+            changed = true;
+            return { ...i, unitPrice: l.unitPrice, name: l.name, sizeLabel: l.sizeLabel };
+          });
+          return changed ? { items } : s;
+        }),
       clear: () => set({ items: [], couponCode: '', giftWrap: false }),
       setCoupon: (couponCode) => set({ couponCode }),
       setGiftWrap: (giftWrap) => set({ giftWrap }),
@@ -59,3 +72,8 @@ export const useCart = create(
     },
   ),
 );
+
+// Another tab placed an order or edited the bag: pick that up instead of later writing stale items back.
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => { if (e.key === 'noore.cart') useCart.persist.rehydrate(); });
+}

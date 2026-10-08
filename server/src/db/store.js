@@ -10,6 +10,7 @@ import path from 'node:path';
 import { config } from '../config.js';
 
 const cache = new Map();
+const loading = new Map();
 let writeChain = Promise.resolve();
 
 async function ensureDir() {
@@ -20,8 +21,15 @@ function fileFor(name) {
   return path.join(config.paths.data, `${name}.json`);
 }
 
-async function load(name) {
-  if (cache.has(name)) return cache.get(name);
+// One disk read per collection, however many requests ask at once: two concurrent first loads
+// used to each set the cache, and the second could replace a record the first had just added.
+function load(name) {
+  if (cache.has(name)) return Promise.resolve(cache.get(name));
+  if (!loading.has(name)) loading.set(name, readFromDisk(name).finally(() => loading.delete(name)));
+  return loading.get(name);
+}
+
+async function readFromDisk(name) {
   await ensureDir();
   try {
     const raw = await fs.readFile(fileFor(name), 'utf8');
@@ -38,16 +46,17 @@ async function load(name) {
 function persist(name) {
   const docs = cache.get(name) || [];
   const snapshot = JSON.stringify(docs, null, 2);
-  writeChain = writeChain
-    .then(async () => {
-      await ensureDir();
-      const target = fileFor(name);
-      const tmp = `${target}.${process.pid}.tmp`;
-      await fs.writeFile(tmp, snapshot, 'utf8');
-      await fs.rename(tmp, target);
-    })
-    .catch((err) => console.error(`[store] failed to persist ${name}:`, err));
-  return writeChain;
+  const write = writeChain.then(async () => {
+    await ensureDir();
+    const target = fileFor(name);
+    const tmp = `${target}.${process.pid}.tmp`;
+    await fs.writeFile(tmp, snapshot, 'utf8');
+    await fs.rename(tmp, target);
+  });
+  // A failed write must reach the caller (so a request doesn't report success for data that
+  // only lives in memory), while the chain itself keeps going for later writes.
+  writeChain = write.catch((err) => console.error(`[store] failed to persist ${name}:`, err));
+  return write;
 }
 
 export function collection(name) {

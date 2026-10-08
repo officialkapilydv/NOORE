@@ -6,6 +6,7 @@ import { useUI } from '@/store/ui';
 import { api, onOfflineChange, isOffline } from '@/lib/api';
 import { formatPrice, COLLECTION_LABEL } from '@/lib/format';
 import { CandleThumb } from '@/components/shop/CandleThumb';
+import { useDialog } from '@/hooks/useDialog';
 
 /* ─── Gold scroll progress bar ─── */
 export function ScrollProgress() {
@@ -21,6 +22,16 @@ export function PageTransition({ children }) {
   const { pathname } = useLocation();
   const lenis = useLenis();
   const setPageSettled = useUI((s) => s.setPageSettled);
+  const [announcement, setAnnouncement] = useState('');
+
+  // The new page is fully revealed: move keyboard focus to it (the link that was clicked is
+  // gone, so focus would otherwise fall back to <body>) and announce it to screen readers.
+  const onSettled = () => {
+    setPageSettled(true);
+    const main = document.getElementById('main');
+    if (main && (!document.activeElement || document.activeElement === document.body)) main.focus({ preventScroll: true });
+    setAnnouncement(document.title);
+  };
 
   // The old page has left and the new one is still behind the curtain: reset scroll now, unseen.
   const onExitComplete = () => {
@@ -30,27 +41,32 @@ export function PageTransition({ children }) {
   };
 
   return (
-    <AnimatePresence mode="wait" initial={false} onExitComplete={onExitComplete}>
-      <motion.div key={pathname} className="page">
-        <motion.div
-          className="page__content"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.25 } }}
-          exit={{ opacity: 0, y: -16, transition: { duration: 0.3, ease: CURTAIN_EASE } }}
-        >
-          {children}
+    <>
+      <AnimatePresence mode="wait" initial={false} onExitComplete={onExitComplete}>
+        <motion.div key={pathname} className="page">
+          <motion.div
+            id="main"
+            tabIndex={-1}
+            className="page__content"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.25 } }}
+            exit={{ opacity: 0, y: -16, transition: { duration: 0.3, ease: CURTAIN_EASE } }}
+          >
+            {children}
+          </motion.div>
+          <motion.div className="curtain curtain--a" initial={{ scaleY: 1 }} animate={{ scaleY: 0, transition: { duration: 0.7, ease: CURTAIN_EASE, delay: 0.05 } }} exit={{ scaleY: 1, transition: { duration: 0.45, ease: CURTAIN_EASE } }} style={{ originY: 0 }} />
+          <motion.div
+            className="curtain curtain--b"
+            initial={{ scaleY: 1 }}
+            animate={{ scaleY: 0, transition: { duration: 0.7, ease: CURTAIN_EASE, delay: 0.12 } }}
+            exit={{ scaleY: 1, transition: { duration: 0.45, ease: CURTAIN_EASE, delay: 0.06 } }}
+            onAnimationComplete={(def) => def?.scaleY === 0 && onSettled()}
+            style={{ originY: 0 }}
+          />
         </motion.div>
-        <motion.div className="curtain curtain--a" initial={{ scaleY: 1 }} animate={{ scaleY: 0, transition: { duration: 0.7, ease: CURTAIN_EASE, delay: 0.05 } }} exit={{ scaleY: 1, transition: { duration: 0.45, ease: CURTAIN_EASE } }} style={{ originY: 0 }} />
-        <motion.div
-          className="curtain curtain--b"
-          initial={{ scaleY: 1 }}
-          animate={{ scaleY: 0, transition: { duration: 0.7, ease: CURTAIN_EASE, delay: 0.12 } }}
-          exit={{ scaleY: 1, transition: { duration: 0.45, ease: CURTAIN_EASE, delay: 0.06 } }}
-          onAnimationComplete={(def) => def?.scaleY === 0 && setPageSettled(true)}
-          style={{ originY: 0 }}
-        />
-      </motion.div>
-    </AnimatePresence>
+      </AnimatePresence>
+      <p className="sr-only" aria-live="polite">{announcement}</p>
+    </>
   );
 }
 
@@ -109,6 +125,8 @@ export function SearchOverlay() {
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  // The input is focused below once the panel has animated in.
+  const dialogRef = useDialog(open, () => setOpen(false), { initialFocus: false });
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 350);
@@ -146,7 +164,7 @@ export function SearchOverlay() {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div className="search" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+        <motion.div ref={dialogRef} className="search" role="dialog" aria-modal="true" aria-label="Search" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
           <motion.div className="search__bg" onClick={() => setOpen(false)} />
           <motion.div className="search__panel" initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -30, opacity: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} data-lenis-prevent>
             <form className="search__form" onSubmit={submit}>
@@ -181,6 +199,7 @@ export function SearchOverlay() {
                   {!loading && items.length === 0 && <li className="search__empty muted">No matches — try a note like “oud” or a mood like “calming”.</li>}
                 </ul>
               )}
+              <p className="sr-only" aria-live="polite">{q.trim().length >= 2 && !loading ? `${items.length} ${items.length === 1 ? 'result' : 'results'}` : ''}</p>
             </div>
           </motion.div>
         </motion.div>

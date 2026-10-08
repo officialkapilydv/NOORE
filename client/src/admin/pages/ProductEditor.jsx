@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { adminApi, issuesToErrors } from '../api';
 import { useAdminData, PageHead, Panel, Btn, Field, Input, Textarea, Select, Toggle, ColorField, TagInput, ImagePicker, useToast } from '../ui';
@@ -32,7 +32,10 @@ export default function ProductEditor() {
   const [show3d, setShow3d] = useState(false);
   const [dirty, setDirty] = useState(false);
 
+  // Stock as last loaded or saved — the baseline for "did the admin actually change it?".
+  const savedStock = useRef(null);
   useEffect(() => {
+    if (existing) savedStock.current = Number(existing.stock);
     if (existing) setDraft({ ...EMPTY, ...existing, vessel: { ...EMPTY.vessel, ...existing.vessel }, notes: { ...EMPTY.notes, ...existing.notes } });
     if (isNew) setDraft(EMPTY);
     setDirty(false);
@@ -52,7 +55,11 @@ export default function ProductEditor() {
     try {
       const payload = { ...draft, slug: draft.slug ? slugify(draft.slug) : undefined, price: Number(draft.price) || Number(draft.sizes[0]?.price) || 0, sizes: draft.sizes.map((s) => ({ ...s, price: Number(s.price) })), kind: draft.collection === 'gifting' ? 'set' : 'single' };
       delete payload.includesProducts; delete payload.reviews; delete payload.related; delete payload.specs; delete payload.collectionMeta;
+      // Orders keep selling while this page is open; only send stock if it was actually edited,
+      // otherwise saving a typo fix would reset stock to the number shown when the page loaded.
+      if (!isNew && Number(draft.stock) === savedStock.current) delete payload.stock;
       const saved = isNew ? await adminApi.products.create(payload) : await adminApi.products.update(slug, payload);
+      savedStock.current = Number(saved.stock);
       toast(isNew ? `"${saved.name}" created` : 'Saved', { type: 'success' });
       setDirty(false);
       if (andClose) navigate('/admin/products');

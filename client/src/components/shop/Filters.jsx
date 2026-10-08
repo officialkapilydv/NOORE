@@ -29,13 +29,13 @@ export function Filters({ state, onChange, facets, total, className = '' }) {
     <aside className={cx('filters', className)} aria-label="Filters">
       <div className="filters__head">
         <span className="caps">Refine</span>
-        <span className="faint small">{total} {total === 1 ? 'candle' : 'candles'}</span>
+        <span className="faint small" aria-live="polite">{total} {total === 1 ? 'candle' : 'candles'}</span>
       </div>
 
       {state.q && (
         <div className="filters__group">
           <p className="filters__label">Searching</p>
-          <button className="filters__q" onClick={() => set({ q: '' })}>“{state.q}” <span>×</span></button>
+          <button className="filters__q" onClick={() => set({ q: '' })} aria-label={`Clear search “${state.q}”`}>“{state.q}” <span aria-hidden="true">×</span></button>
         </div>
       )}
 
@@ -43,7 +43,7 @@ export function Filters({ state, onChange, facets, total, className = '' }) {
         <p className="filters__label">Collection</p>
         <div className="filters__chips">
           {['', 'essentials', 'premium', 'luxury', 'gifting'].map((c) => (
-            <button key={c || 'all'} type="button" className={cx('fchip', (state.collection || '') === c && 'is-active')} onClick={() => set({ collection: c })}>
+            <button key={c || 'all'} type="button" className={cx('fchip', (state.collection || '') === c && 'is-active')} aria-pressed={(state.collection || '') === c} onClick={() => set({ collection: c })}>
               {c ? COLLECTION_LABEL[c] : 'All'}
             </button>
           ))}
@@ -54,7 +54,7 @@ export function Filters({ state, onChange, facets, total, className = '' }) {
         <p className="filters__label">Fragrance family</p>
         <div className="filters__chips">
           {families.map((f) => (
-            <button key={f} type="button" className={cx('fchip', state.family === f && 'is-active')} onClick={() => set({ family: state.family === f ? '' : f })}>
+            <button key={f} type="button" className={cx('fchip', state.family === f && 'is-active')} aria-pressed={state.family === f} onClick={() => set({ family: state.family === f ? '' : f })}>
               {FAMILY_LABEL[f] || f}
             </button>
           ))}

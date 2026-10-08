@@ -8,42 +8,46 @@ import { Button } from '@/components/ui/Button';
 import { Stepper } from '@/components/ui/Primitives';
 import { CandleThumb } from '@/components/shop/CandleThumb';
 import { useSettings } from '@/store/settings';
+import { useDialog } from '@/hooks/useDialog';
 
 export function CartDrawer() {
-  const { items, isOpen, close, setQuantity, remove } = useCart();
+  const { items, isOpen, close, setQuantity, remove, couponCode, giftWrap, syncLines } = useCart();
   const subtotal = items.reduce((n, i) => n + i.unitPrice * i.quantity, 0);
   const navigate = useNavigate();
   const [pricing, setPricing] = useState(null);
   const shippingCfg = useSettings((s) => s.settings.shipping);
   const FREE_OVER = Number(shippingCfg?.freeOver || 1999);
+  const dialogRef = useDialog(isOpen, close, { initialFocus: '.drawer__close' });
 
-  useEffect(() => {
-    const onKey = (e) => e.key === 'Escape' && close();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [close]);
-
+  // Price exactly what checkout will charge: the saved code and gift wrap included. If the saved
+  // code no longer applies, show the bag without it (checkout explains why).
   useEffect(() => {
     if (!isOpen || items.length === 0) { setPricing(null); return; }
+    let current = true;
+    const body = { items: items.map((i) => ({ slug: i.slug, sizeId: i.sizeId, quantity: i.quantity })), giftWrap };
     const t = setTimeout(() => {
-      api.priceCart({ items: items.map((i) => ({ slug: i.slug, sizeId: i.sizeId, quantity: i.quantity })) }).then(setPricing).catch(() => setPricing(null));
+      api.priceCart({ ...body, couponCode: couponCode || null })
+        .catch((err) => (couponCode && err.payload?.field === 'coupon' ? api.priceCart(body) : Promise.reject(err)))
+        .then((p) => { if (current) { setPricing(p); syncLines(p.lines); } })
+        .catch(() => { if (current) setPricing(null); });
     }, 120);
-    return () => clearTimeout(t);
-  }, [isOpen, items]);
+    return () => { current = false; clearTimeout(t); };
+  }, [isOpen, items, couponCode, giftWrap, syncLines]);
 
-  const remaining = Math.max(0, FREE_OVER - subtotal);
-  const progress = Math.min(1, subtotal / FREE_OVER);
+  // Free shipping is judged after discounts, as the server does.
+  const remaining = pricing ? (pricing.shipping === 0 ? 0 : pricing.amountToFreeShipping) : Math.max(0, FREE_OVER - subtotal);
+  const progress = Math.min(1, (FREE_OVER - remaining) / FREE_OVER);
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div className="drawer__bg" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} onClick={close} />
-          <motion.aside className="drawer" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }} aria-label="Shopping bag" data-lenis-prevent>
+          <motion.aside ref={dialogRef} className="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabIndex={-1} initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }} data-lenis-prevent>
             <header className="drawer__head">
               <div>
                 <p className="eyebrow eyebrow--plain">Your bag</p>
-                <h3>{items.length === 0 ? 'Nothing yet' : `${items.reduce((n, i) => n + i.quantity, 0)} ${items.reduce((n, i) => n + i.quantity, 0) === 1 ? 'candle' : 'candles'}`}</h3>
+                <h3 id="drawer-title">{items.length === 0 ? 'Nothing yet' : `${items.reduce((n, i) => n + i.quantity, 0)} ${items.reduce((n, i) => n + i.quantity, 0) === 1 ? 'candle' : 'candles'}`}</h3>
               </div>
               <button className="drawer__close" onClick={close} aria-label="Close bag"><span /><span /></button>
             </header>
@@ -72,7 +76,7 @@ export function CartDrawer() {
                           <Link to={`/products/${item.slug}`} onClick={close} className="drawer__name">{item.name}</Link>
                           <span className="faint small">{item.sizeLabel}</span>
                           <div className="drawer__row">
-                            <Stepper size="sm" value={item.quantity} onChange={(q) => setQuantity(item.key, q)} />
+                            <Stepper size="sm" value={item.quantity} onChange={(q) => setQuantity(item.key, q)} label={`Quantity, ${item.name}`} />
                             <span className="drawer__price">{formatPrice(item.unitPrice * item.quantity)}</span>
                           </div>
                         </div>
@@ -87,7 +91,9 @@ export function CartDrawer() {
             {items.length > 0 && (
               <footer className="drawer__foot">
                 <div className="drawer__totals">
-                  <div><span className="muted">Subtotal</span><span>{formatPrice(subtotal)}</span></div>
+                  <div><span className="muted">Subtotal</span><span>{formatPrice(pricing?.subtotal ?? subtotal)}</span></div>
+                  {pricing?.discount > 0 && <div className="gold"><span>{pricing.coupon?.code || 'Discount'}</span><span>− {formatPrice(pricing.discount)}</span></div>}
+                  {pricing?.giftWrapFee > 0 && <div><span className="muted">Gift wrap</span><span>{formatPrice(pricing.giftWrapFee)}</span></div>}
                   <div><span className="muted">Shipping</span><span>{pricing ? (pricing.shipping === 0 ? 'Complimentary' : formatPrice(pricing.shipping)) : remaining > 0 ? formatPrice(shippingCfg?.flat || 99) : 'Complimentary'}</span></div>
                   <div className="drawer__grand"><span>Total</span><span>{formatPrice(pricing ? pricing.total : subtotal + (remaining > 0 ? Number(shippingCfg?.flat || 99) : 0))}</span></div>
                 </div>

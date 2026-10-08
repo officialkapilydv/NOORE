@@ -113,6 +113,11 @@ em,
   border-radius: 4px;
 }
 
+/* Plain gold is ~2:1 on cream; the deep gold clears the 3:1 focus-indicator minimum. */
+[data-theme='cream'] :focus-visible {
+  outline-color: var(--gold-deep);
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -244,17 +249,23 @@ em,
 }
 
 /* Film grain overlay for a tactile, luxurious finish */
+/* Only as much bleed as the shift animation needs (3% of 116% < 8%): the old 200% layer was
+   4x the screen, blended over everything on every frame. */
 .grain {
   pointer-events: none;
   position: fixed;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
   z-index: 9000;
   opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grainShift 1.2s steps(4) infinite;
   mix-blend-mode: overlay;
+}
+/* Phones: keep the texture, let the compositor rest. */
+@media (hover: none) {
+  .grain { animation: none; }
 }
 @keyframes grainShift {
   0% { transform: translate(0, 0); }
@@ -276,3 +287,22 @@ em,
     animation: none;
   }
 }
+
+/* Keyboard users can jump past the navigation; hidden until focused. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 10002;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: var(--fs-small);
+  transform: translateY(-160%);
+  transition: transform 0.2s;
+}
+.skip-link:focus { transform: none; }
+
+/* Focus is moved here after each navigation; it's a landmark, not a control, so no ring. */
+.page__content:focus { outline: none; }

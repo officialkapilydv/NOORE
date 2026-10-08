@@ -49,7 +49,9 @@ export function GoldDust({ count = 320, spread = [5, 4, 3], center = [0, 1.4, 0]
       scales[i] = 0.4 + Math.random() * Math.random() * 1.6;
     }
     return { positions, phases, scales };
-  }, [count, spread, center]);
+    // Keyed on the values: callers pass fresh array literals each render, which re-randomised the dust.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count, spread.join(), center.join()]);
 
   useFrame((state) => {
     if (mat.current) mat.current.uTime = state.clock.elapsedTime;
@@ -85,7 +87,8 @@ export function Embers({ origin = [0, 1.25, 0], count = 36, color = '#ffb15c' })
       vel[i * 3] = (Math.random() - 0.5) * 0.25; vel[i * 3 + 1] = 0.5 + Math.random() * 0.7; vel[i * 3 + 2] = (Math.random() - 0.5) * 0.25;
     }
     return { positions, life, vel, phases, scales };
-  }, [count, origin]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count, origin.join()]);
 
   useFrame((state, delta) => {
     const { positions, life, vel } = data;

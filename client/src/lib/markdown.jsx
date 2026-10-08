@@ -65,6 +65,9 @@ export function Markdown({ source = '', className = 'prose' }) {
     }
     const para = [];
     while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|[-*]\s|\d+[.)]\s|>|-{3,})/.test(lines[i])) { para.push(lines[i]); i++; }
+    // A line like "--- Updated" matches the stop pattern without being a rule; always consume
+    // at least one line or the outer loop never advances and the tab freezes.
+    if (!para.length) { para.push(lines[i]); i++; }
     blocks.push(<p key={key++}>{para.map((t, j) => <Fragment key={j}>{inline(t, `p${key}-${j}`)}{j < para.length - 1 ? <br /> : null}</Fragment>)}</p>);
   }
   return <div className={className}>{blocks}</div>;

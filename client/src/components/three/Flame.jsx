@@ -66,8 +66,10 @@ extend({ FlameMaterial });
 /**
  * A billboarded shader flame with an attached flickering point light.
  * `glow` tints the light (per product) and `scale` lets the hero run bigger.
+ * `on={false}` hides the flame and fades the light to zero but keeps it in the scene: adding or
+ * removing a light changes every material's shader, so toggling it used to recompile them all.
  */
-export function Flame({ position = [0, 0, 0], glow = '#ffb15c', scale = 1, lightIntensity = 5, castLight = true }) {
+export function Flame({ position = [0, 0, 0], glow = '#ffb15c', scale = 1, lightIntensity = 5, castLight = true, on = true }) {
   const mat = useRef();
   const light = useRef();
   const halo = useRef();
@@ -82,7 +84,7 @@ export function Flame({ position = [0, 0, 0], glow = '#ffb15c', scale = 1, light
     }
     if (light.current) {
       const flicker = 1 + Math.sin(t * 8.3) * 0.08 + Math.sin(t * 19.7) * 0.05 + Math.sin(t * 37.1) * 0.02;
-      light.current.intensity = THREE.MathUtils.damp(light.current.intensity, lightIntensity * flicker, 12, delta);
+      light.current.intensity = THREE.MathUtils.damp(light.current.intensity, on ? lightIntensity * flicker : 0, on ? 12 : 8, delta);
       light.current.position.x = Math.sin(t * 6.1) * 0.012;
       light.current.position.z = Math.cos(t * 5.3) * 0.012;
     }
@@ -95,13 +97,13 @@ export function Flame({ position = [0, 0, 0], glow = '#ffb15c', scale = 1, light
 
   return (
     <group position={position} scale={scale}>
-      <Billboard follow lockX lockZ>
+      <Billboard follow lockX lockZ visible={on}>
         <mesh position={[0, 0.25, 0]} renderOrder={10}>
           <planeGeometry args={[0.3, 0.52, 1, 8]} />
           <flameMaterial ref={mat} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} side={THREE.DoubleSide} />
         </mesh>
       </Billboard>
-      <sprite ref={halo} position={[0, 0.2, 0]} scale={[1.5, 1.5, 1]} renderOrder={9}>
+      <sprite ref={halo} position={[0, 0.2, 0]} scale={[1.5, 1.5, 1]} renderOrder={9} visible={on}>
         <spriteMaterial map={glowTexture()} color={glowColor} transparent opacity={0.32} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
       </sprite>
       {castLight && <pointLight ref={light} position={[0, 0.3, 0]} color={glowColor} intensity={lightIntensity} distance={9} decay={1.8} />}

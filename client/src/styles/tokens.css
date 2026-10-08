@@ -26,7 +26,7 @@
   --line-strong: rgba(232, 207, 138, 0.36);
   --fg: var(--cream);
   --fg-muted: rgba(246, 239, 228, 0.62);
-  --fg-faint: rgba(246, 239, 228, 0.38);
+  --fg-faint: rgba(246, 239, 228, 0.5);
   --accent: var(--gold);
   --accent-contrast: var(--ink);
   --cursor-mix: difference;
@@ -67,8 +67,9 @@
   --line: rgba(43, 28, 21, 0.12);
   --line-strong: rgba(43, 28, 21, 0.3);
   --fg: var(--espresso);
-  --fg-muted: rgba(43, 28, 21, 0.66);
-  --fg-faint: rgba(43, 28, 21, 0.42);
+  --fg-muted: rgba(43, 28, 21, 0.74);
+  --fg-faint: rgba(43, 28, 21, 0.64);
+  --danger: #a4473a;
   --accent: var(--gold-deep);
   --accent-contrast: var(--cream);
 }
@@ -82,7 +83,7 @@
   --line-strong: rgba(232, 207, 138, 0.4);
   --fg: var(--cream);
   --fg-muted: rgba(246, 239, 228, 0.66);
-  --fg-faint: rgba(246, 239, 228, 0.4);
+  --fg-faint: rgba(246, 239, 228, 0.54);
   --accent: var(--gold-light);
   --accent-contrast: var(--ink);
 }

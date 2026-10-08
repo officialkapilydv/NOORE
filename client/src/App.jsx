@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
+import { MotionConfig } from 'framer-motion';
 import { SmoothScroll } from '@/components/layout/SmoothScroll';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -70,37 +71,41 @@ export default function App() {
   }
 
   return (
-    <SmoothScroll>
-      <Preloader />
-      <ScrollProgress />
-      <Navbar />
-      <PageTransition>
-        <Suspense fallback={<div className="page-loading" />}>
-          {/* Pinned location: the page fading out keeps rendering its own route instead of mounting the next one. */}
-          <Routes location={location}>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/collections" element={<CollectionsIndex />} />
-            <Route path="/collections/:slug" element={<Collection />} />
-            <Route path="/products/:slug" element={<Product />} />
-            <Route path="/gifting" element={<Gifting />} />
-            <Route path="/story" element={<Story />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/order/:orderNumber" element={<OrderSuccess />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/pages/:slug" element={<Page />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-        <Footer />
-      </PageTransition>
-      <CartDrawer />
-      <SearchOverlay />
-      <FlyToCart />
-      <Toasts />
-      <OfflineBanner />
-      <div className="grain" aria-hidden="true" />
-    </SmoothScroll>
+    // reducedMotion="user": framer drops transform/layout animation for visitors who ask the OS for less motion.
+    <MotionConfig reducedMotion="user">
+      <SmoothScroll>
+        <a href="#main" className="skip-link">Skip to content</a>
+        <Preloader />
+        <ScrollProgress />
+        <Navbar />
+        <PageTransition>
+          <Suspense fallback={<div className="page-loading" />}>
+            {/* Pinned location: the page fading out keeps rendering its own route instead of mounting the next one. */}
+            <Routes location={location}>
+              <Route path="/" element={<Home />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/collections" element={<CollectionsIndex />} />
+              <Route path="/collections/:slug" element={<Collection />} />
+              <Route path="/products/:slug" element={<Product />} />
+              <Route path="/gifting" element={<Gifting />} />
+              <Route path="/story" element={<Story />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order/:orderNumber" element={<OrderSuccess />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/pages/:slug" element={<Page />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+          <Footer />
+        </PageTransition>
+        <CartDrawer />
+        <SearchOverlay />
+        <FlyToCart />
+        <Toasts />
+        <OfflineBanner />
+        <div className="grain" aria-hidden="true" />
+      </SmoothScroll>
+    </MotionConfig>
   );
 }

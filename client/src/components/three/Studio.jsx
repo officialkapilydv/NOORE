@@ -24,14 +24,16 @@ export function Studio({ intensity = 1, warm = '#ffe3bd', cool = '#cfd8ff' }) {
 }
 
 /** Dark polished-stone floor with blurred reflections. */
+// Re-renders the whole scene into a texture every frame, so it's kept for capable devices; the
+// contact shadow still grounds the candles elsewhere. The blur hides the lower resolution.
 export function ReflectiveFloor({ y = 0, color = '#1b120e', quality = 'high', radius = 14 }) {
-  if (quality === 'low') return null;
+  if (quality !== 'high') return null;
   return (
     <mesh rotation-x={-Math.PI / 2} position={[0, y, 0]} receiveShadow>
       <circleGeometry args={[radius, 64]} />
       <MeshReflectorMaterial
         blur={[420, 120]}
-        resolution={quality === 'high' ? 1024 : 512}
+        resolution={512}
         mixBlur={1}
         mixStrength={quality === 'high' ? 22 : 12}
         roughness={0.95}

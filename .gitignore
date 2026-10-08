@@ -8,3 +8,4 @@ server/data/*.tmp
 Thumbs.db
 server/public/images/uploads/*
 !server/public/images/uploads/.gitkeep
+server/data/.jwt-secret

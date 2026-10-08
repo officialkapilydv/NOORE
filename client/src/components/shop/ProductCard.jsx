@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useCart } from '@/store/cart';
 import { useUI } from '@/store/ui';
 import { formatPrice, COLLECTION_LABEL, shade, isDark } from '@/lib/format';
@@ -29,6 +29,9 @@ export function ProductCard({ product, index = 0, layout = true, compact = false
   const quickAdd = useQuickAdd();
   const thumbRef = useRef(null);
   const [hover, setHover] = useState(false);
+  // The hover photo is only fetched once someone actually hovers (it was ~840 KB of hidden images on Shop).
+  const [photo, setPhoto] = useState(false);
+  const soldOut = product.stock !== undefined && product.stock <= 0;
   const v = product.vessel;
   const dark = isDark(v.color);
   const bgA = dark ? shade(v.color, 0.22) : shade(v.color, -0.42);
@@ -44,12 +47,13 @@ export function ProductCard({ product, index = 0, layout = true, compact = false
       viewport={{ once: true, amount: 0.2 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ duration: 0.8, delay: Math.min(index, 8) * 0.06, ease: [0.16, 1, 0.3, 1] }}
-      onPointerEnter={() => setHover(true)}
+      onPointerEnter={(e) => { setHover(true); if (e.pointerType === 'mouse') setPhoto(true); }}
       onPointerLeave={() => setHover(false)}
     >
       <TiltCard className="pcard__tilt" max={7} scale={1.015}>
-        <Link to={`/products/${product.slug}`} className="pcard__media" data-cursor="view" data-cursor-label="View" style={{ '--bg-a': bgA, '--bg-b': bgB, '--glow': v.glow }}>
-          <span className="pcard__photo" style={{ backgroundImage: `url(${product.image})` }} aria-hidden="true" />
+        {/* Same destination as the name link below, so it's hidden from keyboard and screen readers to avoid a duplicate, badly named link. */}
+        <Link to={`/products/${product.slug}`} className="pcard__media" tabIndex={-1} aria-hidden="true" style={{ '--bg-a': bgA, '--bg-b': bgB, '--glow': v.glow }}>
+          <span className="pcard__photo" style={photo ? { backgroundImage: `url(${product.image})` } : undefined} aria-hidden="true" />
           <span className="pcard__halo" aria-hidden="true" />
           <motion.span ref={thumbRef} className="pcard__candle" animate={{ y: hover ? -10 : 0, rotate: hover ? -2 : 0, scale: hover ? 1.04 : 1 }} transition={{ type: 'spring', stiffness: 220, damping: 20 }}>
             <CandleThumb vessel={v} size={compact ? 120 : 160} lit />
@@ -59,20 +63,19 @@ export function ProductCard({ product, index = 0, layout = true, compact = false
           </span>
           <span className="pcard__collection caps">{COLLECTION_LABEL[product.collection]}</span>
         </Link>
-        <AnimatePresence>
-          {hover && (
-            <motion.button
-              className="pcard__quick"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => { e.preventDefault(); quickAdd(product, defaultSize, 1, thumbRef.current); }}
-            >
-              Quick add · {defaultSize.label}
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {/* Always in the DOM so keyboard users can reach it; CSS reveals it on hover or focus. */}
+        {soldOut ? (
+          <span className="pcard__quick pcard__quick--out">Sold out</span>
+        ) : (
+          <button
+            type="button"
+            className="pcard__quick"
+            aria-label={`Quick add ${product.name}, ${defaultSize.label}`}
+            onClick={(e) => { e.preventDefault(); quickAdd(product, defaultSize, 1, thumbRef.current); }}
+          >
+            Quick add · {defaultSize.label}
+          </button>
+        )}
       </TiltCard>
       <div className="pcard__body">
         <div className="pcard__row">

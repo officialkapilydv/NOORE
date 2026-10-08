@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { api } from '@/lib/api';
 
 const cache = new Map();
@@ -15,6 +15,7 @@ if (typeof window !== 'undefined') {
 /** Small fetch hook with in-memory caching keyed by the request signature. */
 export function useFetch(key, fetcher, { enabled = true, deps = [] } = {}) {
   const [state, setState] = useState(() => ({ data: cache.get(key) ?? null, error: null, loading: !cache.has(key) }));
+  const [attempt, setAttempt] = useState(0);
   const latest = useRef(0);
 
   useEffect(() => {
@@ -33,9 +34,10 @@ export function useFetch(key, fetcher, { enabled = true, deps = [] } = {}) {
         setState((s) => ({ ...s, error, loading: false }));
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, enabled, ...deps]);
+  }, [key, enabled, attempt, ...deps]);
 
-  return state;
+  const refetch = useCallback(() => { cache.delete(key); setAttempt((n) => n + 1); }, [key]);
+  return { ...state, refetch };
 }
 
 export const useProducts = (params = {}) => useFetch(`products:${JSON.stringify(params)}`, () => api.products(params));

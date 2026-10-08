@@ -6,7 +6,7 @@ import path from 'node:path';
 import multer from 'multer';
 import { config } from '../../config.js';
 import { catalog, deleteProduct, queryProducts, reorderProducts, upsertCollection, upsertProduct } from '../../services/catalog.js';
-import { allCoupons, deleteCoupon, upsertCoupon } from '../../services/coupons.js';
+import { allCoupons, deleteCoupon, findCoupon, upsertCoupon } from '../../services/coupons.js';
 import { HttpError, validate } from '../../middleware/errors.js';
 
 const router = Router();
@@ -82,7 +82,8 @@ router.post('/products', validate(productSchema), async (req, res) => {
   res.status(201).json(saved);
 });
 
-router.put('/products/:slug', validate(productSchema), async (req, res) => {
+// On update, stock is optional: when the editor didn't touch it, the live (post-sales) count is kept.
+router.put('/products/:slug', validate(productSchema.extend({ stock: z.coerce.number().int().min(0).optional() })), async (req, res) => {
   const existing = catalog.product(req.params.slug, { includeUnpublished: true });
   if (!existing) throw new HttpError(404, 'Product not found.');
   const nextSlug = req.body.slug ? slugify(req.body.slug) : existing.slug;
@@ -150,19 +151,22 @@ const couponSchema = z.object({
   label: z.string().trim().min(2).max(120),
   type: z.enum(['percent', 'flat', 'shipping']),
   value: z.coerce.number().min(0).max(100000).default(0),
-  collections: z.array(z.string()).optional(),
+  // Defaults to [] so unticking every collection clears the restriction instead of keeping the old one.
+  collections: z.array(z.string()).optional().default([]),
   minSubtotal: z.coerce.number().min(0).optional().nullable(),
   minItems: z.coerce.number().int().min(0).optional().nullable(),
   maxUses: z.coerce.number().int().min(0).optional().nullable(),
-  expiresAt: z.string().optional().nullable(),
+  expiresAt: z.string().trim().optional().nullable().refine((v) => !v || !Number.isNaN(new Date(v).getTime()), 'Please enter a valid expiry date.'),
   active: z.boolean().default(true),
-});
+}).refine((c) => c.type !== 'percent' || c.value <= 100, { message: 'A percentage discount cannot exceed 100%.', path: ['value'] });
 
 router.get('/coupons', (req, res) => res.json({ items: allCoupons() }));
 router.post('/coupons', validate(couponSchema), async (req, res) => res.status(201).json(await upsertCoupon(req.body)));
 router.put('/coupons/:code', validate(couponSchema), async (req, res) => {
+  // Renaming re-creates the coupon; carry its redemptions over so maxUses still means something.
+  const previous = findCoupon(req.params.code);
   if (req.body.code.toUpperCase() !== req.params.code.toUpperCase()) await deleteCoupon(req.params.code);
-  res.json(await upsertCoupon(req.body));
+  res.json(await upsertCoupon({ ...req.body, usageCount: previous?.usageCount || 0 }));
 });
 router.delete('/coupons/:code', async (req, res) => {
   if (!(await deleteCoupon(req.params.code))) throw new HttpError(404, 'Coupon not found.');
@@ -171,14 +175,17 @@ router.delete('/coupons/:code', async (req, res) => {
 
 /* ─── Media ─── */
 const UPLOAD_DIR = path.join(config.paths.publicDir, 'images', 'uploads');
+const IMAGE_TYPES = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp', 'image/gif': '.gif', 'image/avif': '.avif', 'image/svg+xml': '.svg' };
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
     cb(null, UPLOAD_DIR);
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
-    const base = slugify(path.basename(file.originalname, ext)).slice(0, 48) || 'image';
+    // The extension comes from the (allow-listed) type, never the client's filename, so
+    // "x.html" sent as image/png is stored and served as a .png.
+    const ext = IMAGE_TYPES[file.mimetype];
+    const base = slugify(path.basename(file.originalname, path.extname(file.originalname))).slice(0, 48) || 'image';
     cb(null, `${Date.now().toString(36)}-${base}${ext}`);
   },
 });
@@ -186,7 +193,7 @@ const upload = multer({
   storage,
   limits: { fileSize: 6 * 1024 * 1024, files: 10 },
   fileFilter: (req, file, cb) => {
-    if (/^image\/(jpeg|png|webp|gif|avif|svg\+xml)$/.test(file.mimetype)) cb(null, true);
+    if (IMAGE_TYPES[file.mimetype]) cb(null, true);
     else cb(new HttpError(415, 'Only JPG, PNG, WEBP, GIF, AVIF or SVG images are allowed.'));
   },
 });

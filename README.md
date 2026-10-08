@@ -67,6 +67,13 @@ npm run build        # builds client/dist
 npm start            # Express serves the API, the storefront and /admin from one origin (port 4000)
 ```
 
+Before putting the site on the internet:
+
+- **Secrets.** Set `JWT_SECRET` and `ADMIN_KEY` to long random strings. If they're missing or still the public defaults, production generates its own JWT secret (saved as `server/data/.jwt-secret`) and turns the `x-admin-key` header off.
+- **Admin password.** Change the seeded `noore-admin-2026` password under Admin → Settings → Administrators.
+- **Reverse proxy.** Behind nginx, Caddy or a load balancer, set `TRUST_PROXY=1`. Otherwise every visitor shares the proxy's IP for rate limiting, and sitemap/canonical URLs say `http://`. Leave it unset when the container is exposed directly, or visitors could fake their IP.
+- **Payments.** Card and UPI are simulated. Connect a real provider in `server/src/services/payment.js` before taking money.
+
 ## The storefront
 
 | Route | What it does |
@@ -99,9 +106,11 @@ Everything degrades gracefully: if WebGL is unavailable an SVG candle is shown; 
 | Pages | Markdown editor with live preview for terms, privacy, shipping & returns, refunds, candle care — and any new page; footer visibility toggle |
 | Settings | **Brand & SEO · Contact & address · Social links · Shipping & fees · Homepage copy & announcement bar · FAQ · Legal · Administrators** |
 
-All admin routes require a Bearer token with the `admin` role (`POST /api/admin/auth/login`). Scripts can alternatively send the `x-admin-key` header configured by `ADMIN_KEY`.
+All admin routes require a Bearer token with the `admin` role (`POST /api/admin/auth/login`). Scripts can alternatively send the `x-admin-key` header configured by `ADMIN_KEY` (in production, only when it's set to something other than the public default).
 
 ## The API
+
+SEO: `GET /robots.txt`, `GET /sitemap.xml`; every storefront URL is served with its own title, description, Open Graph tags, canonical link and (for products) JSON-LD.
 
 Public: `GET /api/products`, `/api/products/suggest?q=`, `/api/products/:slug`, `/api/collections`, `/api/collections/:slug`, `POST /api/cart/price`, `GET /api/cart/coupons`, `POST /api/orders`, `GET /api/orders/:number?email=`, `GET /api/orders/mine`, `POST /api/auth/register|login`, `GET /api/auth/me`, `POST /api/newsletter`, `POST /api/contact`, `POST /api/gifting/enquiry`, `GET|POST /api/reviews/:slug`, `GET /api/settings`, `GET /api/pages`, `GET /api/pages/:slug`, `GET /api/meta`, `GET /api/health`.
 

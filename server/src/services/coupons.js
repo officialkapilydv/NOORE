@@ -39,8 +39,22 @@ export async function deleteCoupon(code) {
   return removed;
 }
 
-export async function recordCouponUse(code) {
-  if (!code) return;
-  await repo.update((c) => c.code === code, { usageCount: (findCoupon(code)?.usageCount || 0) + 1 });
-  coupons = await repo.all();
+/**
+ * Count a redemption in memory straight away, in the same tick the order was priced, so a
+ * second order arriving during payment already sees it (maxUses can't be exceeded).
+ * `release` undoes it if payment fails; `persist` writes the count once the order is saved.
+ */
+export function holdCouponUse(code) {
+  // Look the coupon up on every step: a save in between swaps in a fresh object.
+  const bump = (by) => { const c = findCoupon(code); if (c) c.usageCount = Math.max(0, (c.usageCount || 0) + by); };
+  bump(1);
+  return {
+    release: () => bump(-1),
+    persist: async () => {
+      const c = findCoupon(code);
+      if (!c) return;
+      await repo.update((x) => x.code === c.code, { usageCount: c.usageCount });
+      coupons = await repo.all();
+    },
+  };
 }

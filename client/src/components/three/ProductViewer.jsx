@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Float, PresentationControls } from '@react-three/drei';
@@ -22,9 +22,11 @@ const HOTSPOTS = [
 function HotspotAnchors({ els }) {
   const anchors = useRef({});
   const { camera, size } = useThree();
-  const v = new THREE.Vector3();
-  const dir = new THREE.Vector3();
+  // Scratch vectors and last-written styles live across frames: no per-frame garbage, and the DOM is
+  // only touched when a value actually changes (each write forces style work).
+  const scratch = useMemo(() => ({ v: new THREE.Vector3(), dir: new THREE.Vector3(), toCam: new THREE.Vector3(), last: {} }), []);
   useFrame(() => {
+    const { v, dir, toCam, last } = scratch;
     for (const h of HOTSPOTS) {
       const anchor = anchors.current[h.key];
       const el = els.current[h.key];
@@ -32,14 +34,20 @@ function HotspotAnchors({ els }) {
       anchor.getWorldPosition(v);
       // facing test: hide spots that rotated to the back of the vessel
       anchor.getWorldDirection(dir);
-      const facing = v.clone().sub(camera.position).normalize().dot(dir) < 0.25;
+      const facing = toCam.copy(v).sub(camera.position).normalize().dot(dir) < 0.25;
       v.project(camera);
       const x = ((v.x + 1) / 2) * size.width;
       const y = ((1 - v.y) / 2) * size.height;
-      el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%)`;
-      el.classList.toggle('is-right', x > size.width * 0.55);
-      el.style.opacity = facing ? '1' : '0.15';
-      el.style.pointerEvents = facing ? 'auto' : 'none';
+      const transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%)`;
+      const prev = last[h.key] || (last[h.key] = {});
+      if (prev.transform !== transform) { el.style.transform = transform; prev.transform = transform; }
+      const right = x > size.width * 0.55;
+      if (prev.right !== right) { el.classList.toggle('is-right', right); prev.right = right; }
+      if (prev.facing !== facing) {
+        el.style.opacity = facing ? '1' : '0.15';
+        el.style.pointerEvents = facing ? 'auto' : 'none';
+        prev.facing = facing;
+      }
     }
   });
   return (

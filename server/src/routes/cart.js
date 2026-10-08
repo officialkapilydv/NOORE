@@ -23,7 +23,7 @@ router.post('/price', validate(priceSchema), (req, res, next) => {
   try {
     res.json(priceCart(req.body));
   } catch (err) {
-    if (err instanceof PricingError) return res.status(err.status).json({ error: err.message });
+    if (err instanceof PricingError) return res.status(err.status).json(err);
     next(err);
   }
 });

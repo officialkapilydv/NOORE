@@ -130,3 +130,41 @@ test('admin routes require auth and can edit products, settings, pages and coupo
   assert.equal(body.slug, 'test-candle');
   assert.equal((await fetch(`${base}/api/products/test-candle`)).status, 200);
 });
+
+test('stock is shared across sizes, coupon errors are tagged, and guests see no personal details', async () => {
+  // Two sizes of one candle draw on the same stock (Orchid Noir has 8).
+  assert.throws(() => priceCart({ items: [{ slug: 'orchid-noir', sizeId: 'classic', quantity: 5 }, { slug: 'orchid-noir', sizeId: 'grand', quantity: 5 }] }), /left in stock/);
+
+  // A bad code is reported as a coupon problem, so the client doesn't treat it as a stock or network error.
+  const bad = await post('/api/cart/price', { items: [{ slug: 'vanilla-bliss', quantity: 1 }], couponCode: 'NOPE' }).then(json);
+  assert.equal(bad.field, 'coupon');
+
+  const stockOf = async () => (await fetch(`${base}/api/products/rose-petal`).then(json)).stock;
+  const before = await stockOf();
+  const placed = await post('/api/orders', {
+    email: 'guest@example.com',
+    items: [{ slug: 'rose-petal', sizeId: 'classic', quantity: 3 }],
+    shipping: { fullName: 'Private Person', phone: '9876543210', line1: '1 Hidden Lane', city: 'Pune', state: 'Maharashtra', postalCode: '411001' },
+    paymentMethod: 'cod',
+  }).then(json);
+  assert.equal(await stockOf(), before - 3);
+
+  const auth = { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` };
+  const patch = (body) => fetch(`${base}/api/admin/orders/${placed.id}`, { method: 'PATCH', headers: auth, body: JSON.stringify(body) }).then(json);
+  await patch({ internalNote: 'VIP — call before delivery', status: 'packed' });
+
+  const guest = await fetch(`${base}/api/orders/${placed.orderNumber}`).then(json);
+  assert.equal(guest.email, undefined);
+  assert.equal(guest.address.fullName, undefined);
+  assert.equal(guest.internalNote, undefined);
+  const owner = await fetch(`${base}/api/orders/${placed.orderNumber}?email=guest@example.com`).then(json);
+  assert.equal(owner.address.fullName, 'Private Person');
+  assert.equal(owner.internalNote, undefined, 'staff notes never leave the admin API');
+  assert.ok(owner.timeline.every((t) => !('by' in t)));
+
+  // Cancelling puts the candles back; reopening takes them again.
+  await patch({ status: 'cancelled' });
+  assert.equal(await stockOf(), before);
+  await patch({ status: 'confirmed' });
+  assert.equal(await stockOf(), before - 3);
+});

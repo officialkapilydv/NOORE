@@ -87,6 +87,7 @@ function localQuery({ collection, family, q, sort = 'featured', featured, limit,
   if (q) {
     const n = q.toLowerCase();
     list = list.filter((p) => [p.name, p.tagline, p.family, ...Object.values(p.notes).flat()].join(' ').toLowerCase().includes(n));
+    if (sort !== 'featured' && SORTERS[sort]) list = [...list].sort(SORTERS[sort]);
   } else list = [...list].sort(SORTERS[sort] || SORTERS.featured);
   if (limit) list = list.slice(0, Number(limit));
   return list;

@@ -96,7 +96,7 @@ export default function Account() {
         <motion.form className="form-card" onSubmit={submit} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.3 }}>
           <div className="tabs">
             {['login', 'register'].map((m) => (
-              <button key={m} type="button" className={mode === m ? 'is-active' : ''} onClick={() => { setMode(m); setErrors({}); }}>
+              <button key={m} type="button" className={mode === m ? 'is-active' : ''} aria-pressed={mode === m} onClick={() => { setMode(m); setErrors({}); }}>
                 {mode === m && <motion.span layoutId="tab-bg" className="tabs__bg" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
                 <span>{m === 'login' ? 'Sign in' : 'Create account'}</span>
               </button>
@@ -104,9 +104,9 @@ export default function Account() {
           </div>
           <AnimatePresence mode="wait">
             <motion.div key={mode} className="form-grid" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.3 }}>
-              {mode === 'register' && <Field label="Name" name="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} error={errors.name} className="span-2" />}
-              <Field label="Email" name="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} error={errors.email} className="span-2" />
-              <Field label="Password" name="password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} error={errors.password} className="span-2" hint={mode === 'register' ? 'At least 8 characters' : undefined} />
+              {mode === 'register' && <Field label="Name" name="name" autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} error={errors.name} className="span-2" />}
+              <Field label="Email" name="email" type="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} error={errors.email} className="span-2" />
+              <Field label="Password" name="password" type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} error={errors.password} className="span-2" hint={mode === 'register' ? 'At least 8 characters' : undefined} />
             </motion.div>
           </AnimatePresence>
           {errors.form && <p className="field__error">{errors.form}</p>}

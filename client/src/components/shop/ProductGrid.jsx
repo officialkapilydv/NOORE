@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ProductCard } from './ProductCard';
 import { Skeleton } from '@/components/ui/Primitives';
 
-export function ProductGrid({ products, loading, columns = 3, emptyText = 'No candles match those filters — try loosening one.' }) {
+export function ProductGrid({ products, loading, error, onRetry, columns = 3, emptyText = 'No candles match those filters — try loosening one.' }) {
   if (loading && !products?.length) {
     return (
       <div className={`pgrid pgrid--${columns}`}>
@@ -13,6 +13,13 @@ export function ProductGrid({ products, loading, columns = 3, emptyText = 'No ca
           </div>
         ))}
       </div>
+    );
+  }
+  if (error && !products?.length) {
+    return (
+      <p className="pgrid__empty lead" role="alert">
+        We couldn't load the candles just now.{onRetry && <> <button type="button" className="link" onClick={onRetry}>Try again</button></>}
+      </p>
     );
   }
   if (!products?.length) {

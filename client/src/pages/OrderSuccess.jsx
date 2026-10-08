@@ -37,7 +37,7 @@ export default function OrderSuccess() {
         <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }} className="success__mark"><FlameMark size={52} animate className="gold" /></motion.div>
         <p className="eyebrow eyebrow--plain">Order {order.payment?.status === 'paid' ? 'confirmed' : 'placed'}</p>
         <h1 className="display">Thank you. The light is <em>on its way.</em></h1>
-        <p className="lead">Order <strong className="gold">{order.orderNumber}</strong> · estimated delivery {formatDate(order.estimatedDelivery, { weekday: 'long' })}. A confirmation has been sent to {order.email}.</p>
+        <p className="lead">Order <strong className="gold">{order.orderNumber}</strong> · estimated delivery {formatDate(order.estimatedDelivery, { weekday: 'long' })}.{order.email && <> A confirmation has been sent to {order.email}.</>}</p>
 
         <div className="success__grid">
           <div className="success__card">
@@ -71,7 +71,7 @@ export default function OrderSuccess() {
           <Button to="/shop" variant="gold" arrow>Continue shopping</Button>
           <Button to="/account" variant="ghost">Track orders</Button>
         </div>
-        <p className="faint small">Keep your order number handy — <Link to="/account" className="gold">your account</Link> lists every order placed with this email.</p>
+        <p className="faint small">Keep your order number handy — orders placed while signed in also appear in <Link to="/account" className="gold">your account</Link>.</p>
       </div>
     </main>
   );

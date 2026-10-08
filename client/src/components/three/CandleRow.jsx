@@ -32,11 +32,14 @@ export function CandleRow({ products = [], spread = 1.9, background = '#0d0907',
           <Rig>
             <group position={[0, -0.75, 0]}>
               {list.map((p, i) => {
+                // One shared light from the centre candle: every point light is paid for per pixel,
+                // in the main pass and again in the reflection, so five of them was the costliest part.
+                const centre = i === Math.floor((list.length - 1) / 2);
                 const x = (i - (list.length - 1) / 2) * spread;
                 const depth = Math.abs(i - (list.length - 1) / 2) * -0.35;
                 return (
                   <Float key={p.slug} speed={1 + (i % 3) * 0.15} rotationIntensity={0.04} floatIntensity={0.08}>
-                    <Candle product={p} quality={quality} lit={lit} lid={lit ? 'hidden' : 'closed'} scale={0.74} position={[x, 0, depth]} rotation-y={(i - (list.length - 1) / 2) * -0.22} lightIntensity={lit ? 1.8 : 0} flameScale={0.9} />
+                    <Candle product={p} quality={quality} lit={lit} lid={lit ? 'hidden' : 'closed'} scale={0.74} position={[x, 0, depth]} rotation-y={(i - (list.length - 1) / 2) * -0.22} lightIntensity={lit ? 3.2 : 0} castLight={centre} flameScale={0.9} />
                   </Float>
                 );
               })}

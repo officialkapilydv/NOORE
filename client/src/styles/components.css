@@ -136,6 +136,9 @@
 }
 .field textarea { resize: vertical; min-height: 80px; }
 .field input:focus, .field textarea:focus { border-color: var(--accent); }
+/* These inputs drop the outline above, so keyboard focus needs its own cue. */
+.select select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.coupon input:focus, .footer__form input:focus, .newsletter__form input:focus, .search__form input:focus { border-bottom-color: var(--accent); }
 .field__line { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.5s var(--ease-out); }
 .field:focus-within .field__line { transform: scaleX(1); }
 .field.has-error input, .field.has-error textarea { border-color: var(--danger); }
@@ -167,7 +170,8 @@
 .stepper--sm { height: 36px; }
 .stepper button { width: 46px; height: 100%; font-size: 1.1rem; color: var(--fg-muted); transition: color 0.3s, background 0.3s; }
 .stepper--sm button { width: 34px; }
-.stepper button:hover { color: var(--fg); background: var(--surface-strong); }
+.stepper button:hover:not(:disabled) { color: var(--fg); background: var(--surface-strong); }
+.stepper button:disabled { opacity: 0.35; cursor: default; }
 .stepper span { min-width: 30px; text-align: center; font-weight: 400; }
 
 /* ─── SVG candle thumb ────────────────────────────────────────── */
@@ -395,7 +399,10 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
 .pcard__badges { position: absolute; top: 14px; left: 14px; display: flex; gap: 6px; z-index: 3; }
 .pcard__collection { position: absolute; top: 18px; right: 16px; z-index: 3; color: rgba(255, 255, 255, 0.7); mix-blend-mode: difference; }
 .pcard__quick { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 4; height: 46px; border-radius: 999px; background: rgba(246, 239, 228, 0.94); color: var(--ink); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500; backdrop-filter: blur(10px); box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5); transition: background 0.3s; }
+.pcard__quick { opacity: 0; transform: translateY(14px); pointer-events: none; transition: background 0.3s, opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out); }
+.pcard:hover .pcard__quick, .pcard:focus-within .pcard__quick { opacity: 1; transform: none; pointer-events: auto; }
 .pcard__quick:hover { background: var(--gold-light); }
+.pcard__quick--out { display: grid; place-items: center; background: rgba(15, 10, 8, 0.82); color: var(--cream); opacity: 1; transform: none; }
 .pcard__body { display: grid; gap: 6px; padding: 0 4px; }
 .pcard__row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .pcard__name { font-family: var(--font-display); font-size: 1.55rem; line-height: 1.1; transition: color 0.3s; }
@@ -425,6 +432,7 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
 .filters__q span { margin-left: 8px; color: var(--fg-muted); }
 .filters__clear { justify-self: start; font-size: var(--fs-small); color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
 .range { width: 100%; appearance: none; height: 2px; background: var(--line-strong); border-radius: 2px; outline: none; }
+.range:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; }
 .range::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--gold-light); border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--gold); cursor: pointer; }
 .range__ticks { display: flex; justify-content: space-between; }
 .chip { position: relative; padding: 8px 14px; border-radius: 999px; font-size: var(--fs-small); color: var(--fg-muted); }

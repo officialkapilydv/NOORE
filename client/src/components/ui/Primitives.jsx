@@ -172,28 +172,31 @@ export function Skeleton({ className = '', style }) {
 export function Field({ label, error, hint, as = 'input', className = '', children, ...rest }) {
   const Tag = as;
   const id = rest.id || rest.name;
+  const errorId = id && `${id}-error`;
+  const hintId = id && `${id}-hint`;
   return (
     <label className={cx('field', error && 'has-error', className)} htmlFor={id}>
       {label && <span className="field__label">{label}</span>}
-      {children || <Tag id={id} className="field__input" {...rest} />}
+      {children || <Tag id={id} className="field__input" aria-invalid={error ? true : undefined} aria-describedby={error ? errorId : hint ? hintId : undefined} {...rest} />}
       <span className="field__line" aria-hidden="true" />
       <AnimatePresence>
-        {error && <motion.span className="field__error" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>{error}</motion.span>}
+        {error && <motion.span id={errorId} role="alert" className="field__error" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>{error}</motion.span>}
       </AnimatePresence>
-      {hint && !error && <span className="field__hint">{hint}</span>}
+      {hint && !error && <span id={hintId} className="field__hint">{hint}</span>}
     </label>
   );
 }
 
 /* ─── Quantity stepper ─── */
-export function Stepper({ value, onChange, min = 1, max = 10, size = 'md' }) {
+export function Stepper({ value, onChange, min = 1, max = 10, size = 'md', label = 'Quantity' }) {
   return (
-    <div className={cx('stepper', `stepper--${size}`)}>
-      <button type="button" onClick={() => onChange(Math.max(min, value - 1))} aria-label="Decrease">−</button>
+    <div className={cx('stepper', `stepper--${size}`)} role="group" aria-label={label}>
+      <button type="button" onClick={() => onChange(Math.max(min, value - 1))} aria-label="Decrease" disabled={value <= min}>−</button>
+      <span className="sr-only" aria-live="polite">{value}</span>
       <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span key={value} initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} transition={{ duration: 0.2 }}>{value}</motion.span>
+        <motion.span key={value} aria-hidden="true" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} transition={{ duration: 0.2 }}>{value}</motion.span>
       </AnimatePresence>
-      <button type="button" onClick={() => onChange(Math.min(max, value + 1))} aria-label="Increase">+</button>
+      <button type="button" onClick={() => onChange(Math.min(max, value + 1))} aria-label="Increase" disabled={value >= max}>+</button>
     </div>
   );
 }

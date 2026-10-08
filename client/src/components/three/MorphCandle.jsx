@@ -24,6 +24,8 @@ function Morphing({ product, quality }) {
   const geo = useMemo(() => vesselGeometry(), []);
   const label = useMemo(() => labelTexture({ name: product.name, vessel: product.vessel, collection: product.collection }), [product, fontsReady]);
   const colors = useRef({ vessel: new THREE.Color(target.color), wax: new THREE.Color(product.vessel.wax), glow: new THREE.Color(product.vessel.glow) });
+  // Built once per product, not three new Colors every frame.
+  const goal = useMemo(() => ({ vessel: new THREE.Color(target.color), wax: new THREE.Color(product.vessel.wax), glow: new THREE.Color(product.vessel.glow) }), [target, product]);
   const labelPulse = useRef(0);
 
   useEffect(() => { labelPulse.current = 1; }, [product]);
@@ -32,9 +34,9 @@ function Morphing({ product, quality }) {
     const m = mat.current;
     if (!m) return;
     const k = 1 - Math.exp(-delta * 3.2);
-    colors.current.vessel.lerp(new THREE.Color(target.color), k);
-    colors.current.wax.lerp(new THREE.Color(product.vessel.wax), k);
-    colors.current.glow.lerp(new THREE.Color(product.vessel.glow), k);
+    colors.current.vessel.lerp(goal.vessel, k);
+    colors.current.wax.lerp(goal.wax, k);
+    colors.current.glow.lerp(goal.glow, k);
     m.color.copy(colors.current.vessel);
     m.attenuationColor.copy(colors.current.vessel);
     m.roughness = THREE.MathUtils.lerp(m.roughness, target.roughness, k);

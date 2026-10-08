@@ -64,8 +64,8 @@ export default function Contact() {
             ) : (
               <motion.form key="form" className="form-card" onSubmit={submit} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.3 }}>
                 <div className="form-grid">
-                  <Field label="Your name" name="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} error={errors.name} />
-                  <Field label="Email" name="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} error={errors.email} />
+                  <Field label="Your name" name="name" autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} error={errors.name} />
+                  <Field label="Email" name="email" type="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} error={errors.email} />
                   <label className="field span-2" htmlFor="topic">
                     <span className="field__label">Topic</span>
                     <div className="select">

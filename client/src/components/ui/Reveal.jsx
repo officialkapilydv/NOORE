@@ -64,11 +64,12 @@ export function SplitText({ text, as = 'span', mode = 'word', delay = 0, stagger
     <Tag
       key={animateKey}
       className={`split ${className}`}
-      aria-label={text}
       variants={container}
       initial="hidden"
       {...(inView ? { whileInView: 'show', viewport: { once, amount: 0.5 } } : { animate: 'show' })}
     >
+      {/* Screen readers ignore aria-label on a plain span, so give them the text itself. */}
+      <span className="sr-only">{text}</span>
       {parts.map(({ c, i }) => (
         <span className="split__mask" key={i} aria-hidden="true">
           <motion.span className="split__item" variants={item}>{c === ' ' ? ' ' : c}</motion.span>

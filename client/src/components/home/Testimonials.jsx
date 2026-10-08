@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useInView, useReducedMotion } from 'framer-motion';
 import { Stars } from '@/components/ui/Primitives';
 import { CandleThumb } from '@/components/shop/CandleThumb';
 import { fallbackProducts } from '@/lib/api';
@@ -15,9 +15,15 @@ const ITEMS = [
 /** 3D coverflow testimonials, auto-advancing. */
 export function Testimonials() {
   const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const ref = useRef(null);
+  const inView = useInView(ref, { amount: 0.3 });
+  const reduce = useReducedMotion();
   const n = ITEMS.length;
 
+  // Only rotate while someone can see it, and never under a pointer, keyboard focus or reduced motion.
+  const paused = hovered || focused || !inView || reduce;
   useEffect(() => {
     if (paused) return;
     const t = setInterval(() => setI((x) => (x + 1) % n), 4800);
@@ -25,7 +31,15 @@ export function Testimonials() {
   }, [paused, n]);
 
   return (
-    <section className="section testimonials" data-theme="dark" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
+    <section
+      ref={ref}
+      className="section testimonials"
+      data-theme="dark"
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}
+    >
       <div className="container">
         <div className="sec-head sec-head--center">
           <p className="eyebrow eyebrow--plain">Loved in 40+ cities</p>
@@ -57,7 +71,7 @@ export function Testimonials() {
         </div>
         <div className="coverflow__dots">
           {ITEMS.map((t, k) => (
-            <button key={t.name} className={k === i ? 'is-active' : ''} onClick={() => setI(k)} aria-label={`Testimonial ${k + 1}`}>
+            <button key={t.name} className={k === i ? 'is-active' : ''} onClick={() => setI(k)} aria-label={`Testimonial ${k + 1} of ${n}`} aria-current={k === i ? 'true' : undefined}>
               <AnimatePresence>{k === i && <motion.span layoutId="dot" />}</AnimatePresence>
             </button>
           ))}

@@ -15,11 +15,18 @@ import authRouter from './routes/auth.js';
 import engagementRouter from './routes/engagement.js';
 import contentRouter from './routes/content.js';
 import adminRouter from './routes/admin/index.js';
+import { renderIndex, robotsTxt, siteOrigin, sitemapXml } from './services/seo.js';
 
 export function createApp() {
   const app = express();
   app.disable('x-powered-by');
-  app.set('trust proxy', 1);
+  // Only trust X-Forwarded-For when a proxy we control sits in front (set TRUST_PROXY=1 behind
+  // nginx/Caddy/a load balancer). Otherwise any client could fake its IP and dodge rate limits.
+  const trustProxy = process.env.TRUST_PROXY || 'false';
+  if (trustProxy === 'true') app.set('trust proxy', true);
+  else if (/^\d+$/.test(trustProxy)) app.set('trust proxy', Number(trustProxy));
+  else if (trustProxy !== 'false') app.set('trust proxy', trustProxy); // e.g. "loopback" or an IP list
+  else app.set('trust proxy', false);
 
   // CORS: same-origin requests (the built storefront served by this server, module scripts, fetch)
   // and the configured dev origins get headers; anything else simply gets no CORS headers.
@@ -34,7 +41,14 @@ export function createApp() {
   if (config.env !== 'test') app.use(morgan(config.env === 'production' ? 'combined' : 'dev'));
 
   // Static imagery (product shots, banners, admin uploads)
-  app.use('/images/uploads', express.static(path.join(config.paths.publicDir, 'images', 'uploads'), { maxAge: '7d' }));
+  // Uploads are admin-supplied files on our own origin: never sniff them into HTML, never run scripts in them (SVG).
+  app.use('/images/uploads', express.static(path.join(config.paths.publicDir, 'images', 'uploads'), {
+    maxAge: '7d',
+    setHeaders(res) {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; sandbox");
+    },
+  }));
   app.use('/images', express.static(path.join(config.paths.publicDir, 'images'), { maxAge: '30d', immutable: true }));
 
   app.get('/api/health', (req, res) => {
@@ -63,15 +77,26 @@ export function createApp() {
   // hangs); the content-hashed files in /assets can be cached forever.
   if (fs.existsSync(path.join(config.paths.clientDist, 'index.html'))) {
     app.use(express.static(config.paths.clientDist, {
+      index: false, // "/" goes through renderIndex below like every other page
       maxAge: '1h',
       setHeaders(res, filePath) {
         if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
         else if (filePath.includes(`${path.sep}assets${path.sep}`)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       },
     }));
-    app.get(/^\/(?!api\/|images\/|assets\/).*/, (req, res) => {
+    app.get('/robots.txt', (req, res) => res.type('text/plain').send(robotsTxt(siteOrigin(req))));
+    app.get('/sitemap.xml', async (req, res) => res.type('application/xml').send(await sitemapXml(siteOrigin(req))));
+    // Paths that look like files (/favicon.ico, /missing.js) get a real 404 instead of the app shell.
+    const indexHtml = fs.readFileSync(path.join(config.paths.clientDist, 'index.html'), 'utf8');
+    app.get(/^\/(?!api\/|images\/|assets\/)(?!.*\.[a-z0-9]+$).*/i, async (req, res) => {
+      let html = indexHtml;
+      try {
+        html = await renderIndex(indexHtml, { origin: siteOrigin(req), pathname: req.path });
+      } catch (err) {
+        console.error('[seo] could not render meta tags; serving the plain shell:', err); // the page itself must still load
+      }
       res.setHeader('Cache-Control', 'no-cache');
-      res.sendFile(path.join(config.paths.clientDist, 'index.html'));
+      res.type('html').send(html);
     });
   }
 

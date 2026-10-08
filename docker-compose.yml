@@ -25,6 +25,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-noore-admin-2026}
       ADMIN_NAME: ${ADMIN_NAME:-Studio admin}
       ADMIN_KEY: ${ADMIN_KEY:-noore-admin}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
     volumes:
       # orders, products, settings, pages, customers… (JSON store)
       - noore-data:/app/server/data

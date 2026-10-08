@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { collection } from '../../db/store.js';
 import { HttpError, validate } from '../../middleware/errors.js';
+import { catalog, saveProducts } from '../../services/catalog.js';
 
 const router = Router();
 const ORDER_STATUSES = ['placed', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled', 'refunded'];
@@ -45,6 +46,17 @@ router.patch('/orders/:id', validate(z.object({
     patch.timeline = [...(order.timeline || []), { status: req.body.status, at: new Date().toISOString(), label: `Order ${req.body.status}`, by: req.admin?.name || 'admin' }];
     if (req.body.status === 'delivered' && order.payment?.method === 'cod') patch.payment = { ...order.payment, status: 'paid' };
     if (['cancelled', 'refunded'].includes(req.body.status)) patch.payment = { ...order.payment, status: req.body.status === 'refunded' ? 'refunded' : order.payment.status };
+
+    // Put the candles back on the shelf when an order is closed, and take them again if it's reopened.
+    const closed = (status) => ['cancelled', 'refunded'].includes(status);
+    const restock = (sign) => {
+      for (const line of order.lines || []) {
+        const product = catalog.product(line.slug, { includeUnpublished: true });
+        if (product) product.stock = Math.max(0, product.stock + sign * line.quantity);
+      }
+    };
+    if (closed(req.body.status) && !order.restocked) { restock(1); patch.restocked = true; await saveProducts(); }
+    else if (!closed(req.body.status) && order.restocked) { restock(-1); patch.restocked = false; await saveProducts(); }
   }
   res.json(await orders.update((o) => o.id === order.id, patch));
 });
@@ -65,7 +77,9 @@ router.get('/subscribers', async (req, res) => {
   if (req.query.format === 'csv') {
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="noore-subscribers.csv"');
-    return res.send(['email,source,createdAt', ...items.map((s) => `${s.email},${s.source || ''},${s.createdAt}`)].join('\n'));
+    // Quote every cell and neutralise leading = + - @ so a crafted "source" can't run as a spreadsheet formula.
+    const cell = (v) => `"${String(v ?? '').replace(/^([=+\-@\t\r])/, "'$1").replace(/"/g, '""')}"`;
+    return res.send(['email,source,createdAt', ...items.map((s) => [s.email, s.source, s.createdAt].map(cell).join(','))].join('\n'));
   }
   res.json(paginate(items, req));
 });

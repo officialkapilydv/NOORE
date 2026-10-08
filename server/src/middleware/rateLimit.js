@@ -1,10 +1,13 @@
 /** Minimal in-memory rate limiter (per IP + route). Good enough for a single instance. */
 const buckets = new Map();
 
-export function rateLimit({ windowMs = 60_000, max = 30 } = {}) {
+/** `name` shares one bucket across a route's paths (e.g. every /orders/:number), instead of one per path. */
+export function rateLimit({ windowMs = 60_000, max = 30, name } = {}) {
   return (req, res, next) => {
-    const key = `${req.ip}:${req.baseUrl}${req.path}`;
+    const key = `${req.ip}:${name || `${req.baseUrl}${req.path}`}`;
     const now = Date.now();
+    // Bound memory: if something floods us with distinct keys, start over rather than grow forever.
+    if (!buckets.has(key) && buckets.size > 50_000) buckets.clear();
     const bucket = buckets.get(key) || { count: 0, reset: now + windowMs };
     if (now > bucket.reset) {
       bucket.count = 0;

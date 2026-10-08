@@ -3,8 +3,9 @@ import { create } from 'zustand';
 let toastId = 0;
 
 export const useUI = create((set, get) => ({
+  // The intro is the home page's opening; someone arriving on a product or policy link goes straight in.
   preloaderDone:
-    (typeof location !== 'undefined' && /[?&]nointro/.test(location.search)) ||
+    (typeof location !== 'undefined' && (/[?&]nointro/.test(location.search) || location.pathname !== '/')) ||
     (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('noore.preloaded') === '1'),
   finishPreloader: () => {
     try { sessionStorage.setItem('noore.preloaded', '1'); } catch { /* ignore */ }

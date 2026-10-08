@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { api } from '@/lib/api';
+import { invalidate } from '@/hooks/useCatalog';
 import { formatDate } from '@/lib/format';
 import { useUI } from '@/store/ui';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +16,14 @@ const SEED = [
 export function Reviews({ product, initial = [] }) {
   const toast = useUI((s) => s.toast);
   const [reviews, setReviews] = useState([...initial, ...SEED]);
+  // The product (and its reviews) may first render from cache and then refresh; take in new ones by id.
+  useEffect(() => {
+    setReviews((current) => {
+      const known = new Set(current.map((r) => r.id));
+      const fresh = initial.filter((r) => !known.has(r.id));
+      return fresh.length ? [...fresh, ...current] : current;
+    });
+  }, [initial]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: '', rating: 5, title: '', body: '' });
   const [errors, setErrors] = useState({});
@@ -32,6 +41,7 @@ export function Reviews({ product, initial = [] }) {
     try {
       const saved = await api.addReview(product.slug, form);
       setReviews((r) => [saved, ...r]);
+      invalidate(`product:${product.slug}`); // the cached product still holds the old review list
       setForm({ name: '', rating: 5, title: '', body: '' });
       setOpen(false);
       toast('Thank you — your review is live.', { type: 'success' });

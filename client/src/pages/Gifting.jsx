@@ -17,11 +17,12 @@ import { useSettings } from '@/store/settings';
 
 const CandleRow = lazy(() => import('@/components/three/CandleRow').then((m) => ({ default: m.CandleRow })));
 
+// Shown until the live catalog answers (prices and availability then come from the server).
 const BOX_PICKS = fallbackProducts.filter((p) => ['essentials', 'premium'].includes(p.collection));
 
 export default function Gifting() {
   usePageTitle('Gifting', 'Curated gift sets and corporate gifting from NOORÉ.');
-  const { data } = useProducts({ collection: 'gifting' });
+  const { data, loading } = useProducts({ collection: 'gifting' });
   const sets = data?.items || [];
   const luxuryTrio = fallbackProducts.filter((p) => ['royal-oud', 'gulab-and-oud', 'orchid-noir'].includes(p.slug));
   const { hash } = useLocation();
@@ -49,7 +50,7 @@ export default function Gifting() {
       <section className="section" data-theme="dark">
         <div className="container">
           <SectionHeading eyebrow="Curated sets" title={<>Boxed & <em>ready</em></>} lead="Each set arrives in our rigid linen-textured box with a satin ribbon, a gold-foiled card and, if you like, a few words in our calligrapher's hand." />
-          <ProductGrid products={sets} columns={3} />
+          <ProductGrid products={sets} loading={loading} columns={3} />
         </div>
       </section>
 
@@ -61,7 +62,10 @@ export default function Gifting() {
 
 function BoxBuilder() {
   const [picked, setPicked] = useState([]);
+  const { data: live } = useProducts({ collection: 'essentials,premium' });
+  const picks = (live?.items?.length ? live.items : BOX_PICKS).filter((p) => p.stock === undefined || p.stock > 0);
   const add = useCart((s) => s.add);
+  const couponCode = useCart((s) => s.couponCode);
   const setCoupon = useCart((s) => s.setCoupon);
   const setGiftWrap = useCart((s) => s.setGiftWrap);
   const open = useCart((s) => s.open);
@@ -72,9 +76,15 @@ function BoxBuilder() {
 
   const addBox = () => {
     picked.forEach((p) => add(p, p.sizes.find((s) => s.id === 'classic') || p.sizes[0], 1));
-    setCoupon('BOX10');
     setGiftWrap(true);
-    toast('Your box is in the bag — BOX10 applied, gift wrap added.', { type: 'success', duration: 4500 });
+    // Only one code applies per order; don't silently swap out one the shopper chose.
+    if (!couponCode || couponCode === 'BOX10') {
+      setCoupon('BOX10');
+      toast('Your box is in the bag — BOX10 applied, gift wrap added.', { type: 'success', duration: 4500 });
+    } else {
+      toast(`Your box is in the bag with gift wrap. Your code ${couponCode} is kept — swap it for BOX10 at checkout if you prefer.`, { type: 'success', duration: 6000 });
+    }
+    setPicked([]);
     setTimeout(open, 600);
   };
 
@@ -84,7 +94,7 @@ function BoxBuilder() {
         <SectionHeading eyebrow="Build your own box" title={<>Three candles, <em>your way</em></>} lead="Pick any three from Essentials and Premium. We box them together, add gift wrap and take 10% off the trio." />
         <div className="builder__layout">
           <div className="builder__picks">
-            {BOX_PICKS.map((p, i) => {
+            {picks.map((p, i) => {
               const on = picked.some((x) => x.slug === p.slug);
               return (
                 <motion.button key={p.slug} className={`pick ${on ? 'is-on' : ''}`} onClick={() => toggle(p)} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: (i % 6) * 0.05, duration: 0.6 }} whileTap={{ scale: 0.97 }} aria-pressed={on}>
@@ -169,10 +179,10 @@ function Corporate() {
           ) : (
             <motion.form key="form" className="form-card" onSubmit={submit} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9 }}>
               <div className="form-grid">
-                <Field label="Company" name="company" value={form.company} onChange={set('company')} error={errors.company} />
-                <Field label="Your name" name="name" value={form.name} onChange={set('name')} error={errors.name} />
-                <Field label="Work email" name="email" type="email" value={form.email} onChange={set('email')} error={errors.email} />
-                <Field label="Phone" name="phone" value={form.phone} onChange={set('phone')} error={errors.phone} />
+                <Field label="Company" name="company" autoComplete="organization" value={form.company} onChange={set('company')} error={errors.company} />
+                <Field label="Your name" name="name" autoComplete="name" value={form.name} onChange={set('name')} error={errors.name} />
+                <Field label="Work email" name="email" type="email" autoComplete="email" value={form.email} onChange={set('email')} error={errors.email} />
+                <Field label="Phone" name="phone" type="tel" autoComplete="tel" value={form.phone} onChange={set('phone')} error={errors.phone} />
                 <Field label="Quantity" name="quantity" type="number" min={10} value={form.quantity} onChange={set('quantity')} error={errors.quantity} hint="Minimum 10 pieces" />
                 <Field label="Budget per gift (₹)" name="budgetPerGift" type="number" min={500} step={100} value={form.budgetPerGift} onChange={set('budgetPerGift')} error={errors.budgetPerGift} />
                 <Field label="Occasion" name="occasion" value={form.occasion} onChange={set('occasion')} />

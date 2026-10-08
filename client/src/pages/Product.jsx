@@ -39,9 +39,12 @@ export default function Product() {
   if (!product) return null;
 
   const hasLid = product.vessel.lid && product.vessel.lid !== 'none';
+  const soldOut = product.stock <= 0;
+  const maxQty = Math.max(1, Math.min(10, product.stock ?? 10));
   const isSet = product.kind === 'set';
   const add = (open) => {
-    quickAdd(product, size, qty, addBtn.current, { open });
+    if (soldOut) return;
+    quickAdd(product, size, Math.min(qty, maxQty), addBtn.current, { open });
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
   };
@@ -129,15 +132,15 @@ export default function Product() {
           </div>
 
           <div className="product__buy">
-            <Stepper value={qty} onChange={setQty} />
-            <Button ref={addBtn} variant="gold" size="lg" className="product__add" onClick={() => add(false)} magnetic={false}>
+            <Stepper value={Math.min(qty, maxQty)} onChange={setQty} max={maxQty} />
+            <Button ref={addBtn} variant="gold" size="lg" className="product__add" onClick={() => add(false)} magnetic={false} disabled={soldOut}>
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span key={added ? 'a' : 'b'} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -12, opacity: 0 }} transition={{ duration: 0.25 }}>
-                  {added ? '✦ Added to bag' : `Add to bag · ${formatPrice(size.price * qty)}`}
+                  {soldOut ? 'Sold out' : added ? '✦ Added to bag' : `Add to bag · ${formatPrice(size.price * Math.min(qty, maxQty))}`}
                 </motion.span>
               </AnimatePresence>
             </Button>
-            <Button variant="ghost" size="lg" onClick={() => { add(false); setTimeout(() => navigate('/checkout'), 500); }} magnetic={false}>Buy now</Button>
+            <Button variant="ghost" size="lg" onClick={() => { add(false); setTimeout(() => navigate('/checkout'), 500); }} magnetic={false} disabled={soldOut}>Buy now</Button>
           </div>
           <p className="product__stock small">{product.stock <= 0 ? <span className="gold">Sold out — back soon</span> : product.stock <= 10 ? <span className="gold">Only {product.stock} left in this pour</span> : `In stock · ships in ${ship.dispatchDays} working days`} · Free shipping over {formatPrice(ship.freeOver)}</p>
 

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { SplitText } from '@/components/ui/Reveal';
@@ -7,7 +7,8 @@ import { CandleThumb } from '@/components/shop/CandleThumb';
 import { useMedia } from '@/hooks/useMedia';
 import { useSettings } from '@/store/settings';
 
-const HeroScene = lazy(() => import('@/components/three/HeroScene').then((m) => ({ default: m.HeroScene })));
+const loadHeroScene = () => import('@/components/three/HeroScene');
+const HeroScene = lazy(() => loadHeroScene().then((m) => ({ default: m.HeroScene })));
 
 const HERO_VESSEL = { type: 'glass', color: '#d98a3a', wax: '#f4dfb7', lid: 'gold', labelBg: '#f6ead3', labelText: '#4a2a10', accent: '#d9b162', glow: '#ffb15c' };
 
@@ -17,6 +18,8 @@ export function Hero() {
   const narrow = useMedia('(max-width: 960px)');
   const home = useSettings((s) => s.settings.home);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  // Fetch three.js while the intro plays, so the scene is ready the moment the curtain parts.
+  useEffect(() => { loadHeroScene().catch(() => {}); }, []);
   const textY = useTransform(scrollYProgress, [0, 1], [0, -160]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   const hintOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);

@@ -123,6 +123,8 @@ export function queryProducts({ collection: col, family, q, minPrice, maxPrice, 
       return s;
     };
     list = list.map((p) => [score(p), p]).filter(([s]) => s > 0).sort((a, b) => b[0] - a[0]).map(([, p]) => p);
+    // Relevance is the default order for a search, but a sort the shopper picked still applies.
+    if (sort !== 'featured' && SORTERS[sort]) list = [...list].sort(SORTERS[sort]);
   } else {
     list = [...list].sort(SORTERS[sort] || SORTERS.featured);
   }

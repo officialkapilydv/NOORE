@@ -8,6 +8,7 @@ import { FlameMark } from '@/components/ui/Logo';
 import { useMagnetic } from '@/hooks/useMagnetic';
 import { useSettings } from '@/store/settings';
 import { SwapText } from '@/components/ui/Primitives';
+import { useDialog } from '@/hooks/useDialog';
 
 const NAV = [
   { to: '/shop', label: 'Shop' },
@@ -50,11 +51,18 @@ export function Navbar() {
   const count = useCart((s) => s.items.reduce((n, i) => n + i.quantity, 0));
   const toggleCart = useCart((s) => s.toggle);
   const cartOpen = useCart((s) => s.isOpen);
-  const { menuOpen, setMenuOpen, setSearchOpen, setCartIconRect, preloaderDone } = useUI();
+  // Individual selectors: reading the whole store re-rendered the header on every toast and flyer.
+  const menuOpen = useUI((s) => s.menuOpen);
+  const setMenuOpen = useUI((s) => s.setMenuOpen);
+  const setSearchOpen = useUI((s) => s.setSearchOpen);
+  const setCartIconRect = useUI((s) => s.setCartIconRect);
+  const preloaderDone = useUI((s) => s.preloaderDone);
   const user = useAuth((s) => s.user);
   const announcement = useSettings((s) => s.settings.announcement);
   const cartRef = useRef(null);
   const isHome = pathname === '/';
+  // The header (and its close button) stays above the menu, so no Tab trap; just Escape, focus and an inert page.
+  const menuRef = useDialog(menuOpen, () => setMenuOpen(false), { initialFocus: '.menu__link', trap: false, inert: ['.page'] });
 
   useMotionValueEvent(scrollY, 'change', (y) => {
     setScrolled(y > 40);
@@ -70,10 +78,12 @@ export function Navbar() {
   }, [showAnnouncement]);
 
   useEffect(() => {
-    const measure = () => { if (cartRef.current) setCartIconRect(cartRef.current.getBoundingClientRect()); };
+    let frame = 0;
+    const measure = () => { frame = 0; if (cartRef.current) setCartIconRect(cartRef.current.getBoundingClientRect()); };
+    const onResize = () => { if (!frame) frame = requestAnimationFrame(measure); }; // at most once per frame
     measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    window.addEventListener('resize', onResize);
+    return () => { window.removeEventListener('resize', onResize); cancelAnimationFrame(frame); };
   }, [setCartIconRect, scrolled]);
 
   return (
@@ -84,6 +94,8 @@ export function Navbar() {
         animate={{ y: hidden && !cartOpen ? -110 : 0, opacity: preloaderDone ? 1 : 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: preloaderDone ? 0.1 : 0 }}
         onMouseLeave={() => setMega(false)}
+        // Never leave keyboard focus on an off-screen (scrolled-away) header.
+        onFocusCapture={() => setHidden(false)}
       >
         {showAnnouncement && (
           <div className="announce">
@@ -162,13 +174,13 @@ export function Navbar() {
 
       <AnimatePresence>
         {menuOpen && (
-          <motion.div className="menu" initial={{ clipPath: 'circle(0% at 100% 0%)' }} animate={{ clipPath: 'circle(150% at 100% 0%)' }} exit={{ clipPath: 'circle(0% at 100% 0%)' }} transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}>
+          <motion.div ref={menuRef} className="menu" role="dialog" aria-label="Menu" data-lenis-prevent initial={{ clipPath: 'circle(0% at 100% 0%)' }} animate={{ clipPath: 'circle(150% at 100% 0%)' }} exit={{ clipPath: 'circle(0% at 100% 0%)' }} transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}>
             <div className="menu__inner">
               <ul className="menu__list">
                 {[{ to: '/', label: 'Home' }, ...NAV, { to: '/account', label: 'Account' }].map((item, i) => (
                   <li key={item.to} className="split__mask">
                     <motion.div initial={{ y: '110%' }} animate={{ y: 0 }} exit={{ y: '110%' }} transition={{ delay: 0.25 + i * 0.06, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-                      <NavLink to={item.to} className="menu__link">{item.label}</NavLink>
+                      <NavLink to={item.to} className="menu__link" onClick={() => setMenuOpen(false)}>{item.label}</NavLink>
                     </motion.div>
                   </li>
                 ))}
@@ -176,7 +188,7 @@ export function Navbar() {
               <motion.div className="menu__foot" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
                 <p className="caps">Collections</p>
                 <div className="menu__cols">
-                  {COLLECTIONS.map((c) => <Link key={c.slug} to={c.slug === 'gifting' ? '/gifting' : `/collections/${c.slug}`}>{c.name}</Link>)}
+                  {COLLECTIONS.map((c) => <Link key={c.slug} to={c.slug === 'gifting' ? '/gifting' : `/collections/${c.slug}`} onClick={() => setMenuOpen(false)}>{c.name}</Link>)}
                 </div>
                 <p className="faint">hello@noore.in · +91 98765 43210</p>
               </motion.div>

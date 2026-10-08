@@ -75,7 +75,7 @@ export default function Products() {
             { key: 'collection', label: 'Collection', render: (r) => COLLECTION_LABEL[r.collection] || r.collection },
             { key: 'price', label: 'From', align: 'right', render: (r) => money(r.price) },
             { key: 'stock', label: 'Stock', width: 110, render: (r) => (
-              <Input type="number" min={0} value={r.stock} className="adm-input--sm" onChange={(e) => setData({ ...data, items: data.items.map((p) => (p.slug === r.slug ? { ...p, stock: Number(e.target.value) } : p)) })} onBlur={(e) => patch(r.slug, { stock: Number(e.target.value) })} />) },
+              <Input type="number" min={0} value={r.stock} className="adm-input--sm" onChange={(e) => setData({ ...data, items: data.items.map((p) => (p.slug === r.slug ? { ...p, stock: Number(e.target.value) } : p)) })} onFocus={(e) => { e.target.dataset.before = e.target.value; }} onBlur={(e) => { if (e.target.value !== e.target.dataset.before) patch(r.slug, { stock: Number(e.target.value) }); }} />) },
             { key: 'featured', label: 'Featured', width: 90, render: (r) => <Toggle checked={Boolean(r.featured)} onChange={(v) => patch(r.slug, { featured: v })} /> },
             { key: 'published', label: 'Live', width: 120, render: (r) => <span className="adm-row"><Toggle checked={r.published !== false} onChange={(v) => patch(r.slug, { published: v })} />{busySlug === r.slug ? <span className="adm-spinner adm-spinner--dark adm-spinner--xs" /> : r.published === false ? <Pill tone="neutral">Draft</Pill> : null}</span> },
             { key: 'actions', label: '', align: 'right', render: (r) => (
