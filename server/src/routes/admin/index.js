@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import crypto from 'node:crypto';
 import { collection } from '../../db/store.js';
 import { config } from '../../config.js';
 import { catalog } from '../../services/catalog.js';
@@ -15,13 +16,21 @@ import contentRouter from './content.js';
 const router = Router();
 const admins = collection('admins');
 
-/** Create the first administrator from env (or sensible dev defaults) on boot. */
+const DEFAULT_ADMIN_PASSWORD = 'noore-admin-2026'; // shown in the README and the dev login page — public
+
+/**
+ * Create the first administrator from env (or sensible dev defaults) on boot.
+ * In production a missing or public password is replaced by a random one, printed once in the
+ * server log, so a fresh data volume never comes up with a login anyone can look up.
+ */
 export async function seedAdmin() {
   if ((await admins.count()) > 0) return null;
   const email = (process.env.ADMIN_EMAIL || 'admin@noore.in').toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || 'noore-admin-2026';
+  const given = process.env.ADMIN_PASSWORD;
+  const generated = config.env === 'production' && (!given || given === DEFAULT_ADMIN_PASSWORD);
+  const password = generated ? crypto.randomBytes(12).toString('base64url') : given || DEFAULT_ADMIN_PASSWORD;
   await admins.insert({ id: uid('adm_'), name: process.env.ADMIN_NAME || 'Studio admin', email, passwordHash: await bcrypt.hash(password, 10), role: 'admin' });
-  return { email, password };
+  return { email, password, fromEnv: Boolean(given) && !generated };
 }
 
 const publicAdmin = (a) => ({ id: a.id, name: a.name, email: a.email, role: a.role, createdAt: a.createdAt });

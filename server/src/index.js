@@ -15,7 +15,8 @@ app.listen(config.port, () => {
   console.log(`\n  ✦ NOORÉ API  →  http://localhost:${config.port}`);
   console.log(`    ${products.length} products · ${collections.length} collections · env=${config.env}`);
   if (seededAdmin) {
-    console.log(`\n  ✦ Admin account created  →  ${seededAdmin.email}  /  ${seededAdmin.password}`);
+    // A password chosen via ADMIN_PASSWORD is not echoed into host logs; a generated one must be.
+    console.log(`\n  ✦ Admin account created  →  ${seededAdmin.email}  /  ${seededAdmin.fromEnv ? '(password from ADMIN_PASSWORD)' : seededAdmin.password}`);
     console.log('    Change it in the admin panel (Settings → Administrators) or set ADMIN_EMAIL / ADMIN_PASSWORD in .env');
   }
   console.log('');

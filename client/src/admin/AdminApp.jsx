@@ -68,7 +68,7 @@ function Login() {
         <Field label="Password"><Input type="password" autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></Field>
         {error && <p className="adm-field__error">{error}</p>}
         <Btn type="submit" loading={busy}>Enter the studio</Btn>
-        <p className="adm-login__hint">First run? The API prints the seeded admin email and password in its console (default <code>admin@noore.in</code> / <code>noore-admin-2026</code>). Change it under Settings → Administrators.</p>
+        {import.meta.env.DEV && <p className="adm-login__hint">First run? The API prints the seeded admin email and password in its console (default <code>admin@noore.in</code> / <code>noore-admin-2026</code>). Change it under Settings → Administrators.</p>}
         <Link to="/" className="adm-login__back">← Back to the storefront</Link>
       </form>
     </div>

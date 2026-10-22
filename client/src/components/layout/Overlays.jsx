@@ -216,7 +216,9 @@ export function OfflineBanner() {
     <AnimatePresence>
       {offline && (
         <motion.div className="offline" initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}>
-          Showing the bundled catalog — start the API (<code>npm run dev</code> at the project root) for cart pricing & checkout.
+          {import.meta.env.DEV
+            ? <>Showing the bundled catalog — start the API (<code>npm run dev:local</code> at the project root) for cart pricing & checkout.</>
+            : 'We’re having trouble connecting — prices and checkout will be back in a moment.'}
         </motion.div>
       )}
     </AnimatePresence>

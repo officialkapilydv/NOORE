@@ -31,7 +31,9 @@ export async function adminRequest(path, { method = 'GET', body, formData } = {}
       body: formData || (body ? JSON.stringify(body) : undefined),
     });
   } catch {
-    throw new AdminApiError('Cannot reach the NOORÉ API. Is the server running on port 4000?', 0);
+    throw new AdminApiError(import.meta.env.DEV
+      ? 'Cannot reach the NOORÉ API. Is the server running on port 4000?'
+      : 'Could not connect to the server. Check your connection and try again.', 0);
   }
   const text = await res.text();
   let data = null;
