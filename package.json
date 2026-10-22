@@ -8,7 +8,8 @@
     "server"
   ],
   "scripts": {
-    "dev": "concurrently -k -n API,WEB -c yellow,magenta \"npm:dev --workspace server\" \"npm:dev --workspace client\"",
+    "dev": "node scripts/dev.mjs",
+    "dev:local": "concurrently -k -n API,WEB -c yellow,magenta \"npm:dev --workspace server\" \"npm:dev --workspace client\"",
     "build": "npm run build --workspace client",
     "start": "npm run start --workspace server",
     "preview": "npm run preview --workspace client",
