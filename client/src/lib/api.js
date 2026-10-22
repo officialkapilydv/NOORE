@@ -8,7 +8,9 @@ import fallbackCollections from '@shared/catalog/collections.json';
 import fallbackSettings from '@shared/content/settings.json';
 import fallbackPages from '@shared/content/pages.json';
 
-const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+// Empty = same origin (Express serves the API and the storefront together). Deliberately not the
+// generic VITE_API_URL: hosts like GoDaddy Airo set that in their build env, pointing elsewhere.
+const BASE = (import.meta.env.VITE_NOORE_API_URL || '').replace(/\/$/, '');
 const TOKEN_KEY = 'noore.token';
 
 export const getToken = () => {

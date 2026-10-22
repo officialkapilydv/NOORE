@@ -1,5 +1,5 @@
 /** Admin API client — separate token from the storefront customer session. */
-const BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const BASE = (import.meta.env.VITE_NOORE_API_URL || '').replace(/\/$/, '');
 const KEY = 'noore.admin.token';
 
 export const adminToken = {

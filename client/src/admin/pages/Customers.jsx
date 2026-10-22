@@ -26,7 +26,7 @@ function Subscribers() {
   const remove = async (s) => { if (!window.confirm(`Remove ${s.email}?`)) return; try { await adminApi.subscribers.remove(s.id); toast('Removed'); reload(); } catch (err) { toast(err.message, { type: 'error' }); } };
   const exportCsv = async () => {
     try {
-      const res = await fetch(`${(import.meta.env.VITE_API_URL || '')}/api/admin/subscribers?format=csv`, { headers: { Authorization: `Bearer ${adminToken.get()}` } });
+      const res = await fetch(`${(import.meta.env.VITE_NOORE_API_URL || '')}/api/admin/subscribers?format=csv`, { headers: { Authorization: `Bearer ${adminToken.get()}` } });
       const blob = await res.blob();
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
