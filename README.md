@@ -47,9 +47,10 @@ Requires Node.js 20.19+ or 22.12+ (Vite 7's minimum).
 
 ```bash
 npm install          # installs root, client and server workspaces
-npm run dev          # starts the API (port 4000) and the storefront (port 5173) together
-                     # (with NODE_ENV=production it builds and runs `npm start` instead — for hosts like GoDaddy Airo that only run `npm run dev`)
+npm run dev:local    # starts the API (port 4000) and the storefront (port 5173) together, with live reload
 ```
+
+`npm run dev` (no `:local`) builds the storefront and runs the production server on `$PORT` — that is what hosts like GoDaddy Airo, which only ever run `npm run dev`, get.
 
 Open **http://localhost:5173** for the storefront and **http://localhost:5173/admin** for the studio admin.
 
