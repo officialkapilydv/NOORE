@@ -39,10 +39,11 @@
 .btn__shine { position: absolute; top: -20%; bottom: -20%; left: -30%; width: 35%; z-index: -1; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent); transform: skewX(-20deg) translateX(-200%); transition: transform 0s; }
 .btn:hover .btn__shine { transform: skewX(-20deg) translateX(420%); transition: transform 0.9s var(--ease-out); }
 .btn__label { display: inline-flex; align-items: center; gap: 10px; }
-.btn__text { position: relative; display: inline-block; overflow: hidden; line-height: 1.2; }
-.btn__text[data-text]::after { content: attr(data-text); position: absolute; left: 0; top: 100%; }
-.btn__text[data-text] { transition: transform 0.5s var(--ease-out); }
-.btn:hover .btn__text[data-text] { transform: translateY(-100%); }
+.btn__text { display: inline-block; overflow: hidden; line-height: 1.2; }
+.btn__roll { position: relative; display: block; }
+.btn__roll[data-text]::after { content: attr(data-text); position: absolute; left: 0; top: 100%; }
+.btn__roll[data-text] { transition: transform 0.5s var(--ease-out); }
+.btn:hover .btn__roll[data-text] { transform: translateY(-100%); }
 .btn__arrow { transition: transform 0.5s var(--ease-out); }
 .btn:hover .btn__arrow { transform: translateX(5px); }
 .btn--gold { box-shadow: 0 10px 30px -12px rgba(201, 162, 74, 0.6); }
@@ -271,7 +272,7 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
 .nav__link.is-active::after, .nav__link:hover::after { transform: scaleX(1); transform-origin: left; }
 .nav__brand { display: inline-flex; align-items: center; gap: 10px; color: var(--cream); }
 .nav__flame { flex-shrink: 0; color: var(--gold-light); }
-.nav__wordmark { font-family: var(--font-display); font-size: 1.75rem; letter-spacing: 0.28em; margin-right: -0.28em; font-weight: 500; }
+.nav__wordmark { font-family: var(--font-display); font-size: 2.15rem; line-height: 1; letter-spacing: 0.03em; margin-right: -0.03em; font-weight: 500; }
 .nav__lockup { display: grid; justify-items: center; gap: 2px; }
 .nav__tagline { font-size: 0.5rem; letter-spacing: 0.26em; margin-right: -0.26em; text-transform: uppercase; white-space: nowrap; line-height: 1; opacity: 0.8; }
 .nav__right { display: flex; justify-content: flex-end; align-items: center; }
@@ -314,7 +315,7 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
 }
 @media (max-width: 420px) {
   .nav__brand { gap: 6px; }
-  .nav__wordmark { font-size: 1.35rem; }
+  .nav__wordmark { font-size: 1.75rem; }
   .nav__tagline { font-size: 0.42rem; letter-spacing: 0.2em; margin-right: -0.2em; }
 }
 

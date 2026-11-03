@@ -19,7 +19,7 @@ export const Button = forwardRef(function Button(
       <span className="btn__bg" aria-hidden="true" />
       <span className="btn__shine" aria-hidden="true" />
       <span className="btn__label">
-        <span className="btn__text" data-text={typeof children === 'string' ? children : undefined}>{children}</span>
+        <span className="btn__text"><span className="btn__roll" data-text={typeof children === 'string' ? children : undefined}>{children}</span></span>
         {arrow && (
           <svg className="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

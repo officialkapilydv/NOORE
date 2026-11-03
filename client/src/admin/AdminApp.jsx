@@ -62,7 +62,7 @@ function Login() {
   return (
     <div className="adm-login">
       <form className="adm-login__card" onSubmit={submit}>
-        <div className="adm-login__brand"><FlameMark size={30} /><span>NOORÉ</span><em>Studio admin</em></div>
+        <div className="adm-login__brand"><FlameMark size={30} /><span>Nooré</span><em>Studio admin</em></div>
         <h1>Sign in</h1>
         <Field label="Email"><Input type="email" autoComplete="username" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required autoFocus /></Field>
         <Field label="Password"><Input type="password" autoComplete="current-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></Field>
@@ -84,7 +84,7 @@ function Shell() {
   return (
     <div className="adm">
       <aside className={`adm-side ${open ? 'is-open' : ''}`}>
-        <Link to="/admin" className="adm-side__brand"><FlameMark size={22} /><span>NOORÉ</span><em>Studio</em></Link>
+        <Link to="/admin" className="adm-side__brand"><FlameMark size={22} /><span>Nooré</span><em>Studio</em></Link>
         <nav className="adm-nav">
           {NAV.map((item, i) => item.group ? <p key={`g${i}`} className="adm-nav__group">{item.group}</p> : (
             <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => `adm-nav__link ${isActive ? 'is-active' : ''}`}>

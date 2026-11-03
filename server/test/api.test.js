@@ -101,7 +101,7 @@ test('admin routes require auth and can edit products, settings, pages and coupo
 
   const settings = await fetch(`${base}/api/admin/settings`, { method: 'PUT', headers: { 'Content-Type': 'application/json', ...auth }, body: JSON.stringify({ shipping: { freeOver: 5000 }, contact: { phone: '+91 11111 11111' } }) }).then(json);
   assert.equal(settings.shipping.freeOver, 5000);
-  assert.equal(settings.brand.name, 'NOORÉ', 'partial updates keep the rest');
+  assert.equal(settings.brand.name, 'Nooré', 'partial updates keep the rest');
   const pub = await fetch(`${base}/api/settings`).then(json);
   assert.equal(pub.contact.phone, '+91 11111 11111');
   const priced = await post('/api/cart/price', { items: [{ slug: 'gulab-and-oud', quantity: 1 }] }).then(json);

@@ -1,11 +1,15 @@
 import { useRef, useEffect } from 'react';
 import { useIsTouch } from './useMedia';
 
+/** Furthest the element may lean — less than the gap between neighbouring buttons, so they never touch. */
+const MAX_OFFSET = 6;
+const clamp = (v) => Math.max(-MAX_OFFSET, Math.min(MAX_OFFSET, v));
+
 /**
- * Magnetic hover: the element leans toward the pointer and springs back on leave.
+ * Magnetic hover: while the pointer is over it, the element leans toward the pointer; it springs back on leave.
  * Pure rAF + CSS transform — no re-renders.
  */
-export function useMagnetic({ strength = 0.35, radius = 110, scale = 1.04 } = {}) {
+export function useMagnetic({ strength = 0.35, scale = 1.04 } = {}) {
   const ref = useRef(null);
   const isTouch = useIsTouch();
 
@@ -33,30 +37,22 @@ export function useMagnetic({ strength = 0.35, radius = 110, scale = 1.04 } = {}
 
     const onMove = (e) => {
       const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist = Math.hypot(dx, dy);
-      if (dist < radius + Math.max(r.width, r.height) / 2) {
-        active = true;
-        target = { x: dx * strength, y: dy * strength, s: scale };
-      } else if (active) {
-        active = false;
-        target = { x: 0, y: 0, s: 1 };
-      }
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      active = true;
+      target = { x: clamp(dx * strength), y: clamp(dy * strength), s: scale };
       start();
     };
     const onLeave = () => { active = false; target = { x: 0, y: 0, s: 1 }; start(); };
 
-    window.addEventListener('pointermove', onMove, { passive: true });
+    el.addEventListener('pointermove', onMove, { passive: true });
     el.addEventListener('pointerleave', onLeave);
     return () => {
-      window.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointermove', onMove);
       el.removeEventListener('pointerleave', onLeave);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [strength, radius, scale, isTouch]);
+  }, [strength, scale, isTouch]);
 
   return ref;
 }

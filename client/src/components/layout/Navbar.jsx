@@ -26,7 +26,7 @@ const COLLECTIONS = [
 ];
 
 function IconButton({ children, label, onClick, className = '', badge, ...rest }) {
-  const ref = useMagnetic({ strength: 0.25, radius: 40, scale: 1.08 });
+  const ref = useMagnetic({ strength: 0.25, scale: 1.08 });
   return (
     <button ref={ref} className={`nav__icon ${className}`} aria-label={label} onClick={onClick} {...rest}>
       {children}
@@ -116,7 +116,7 @@ export function Navbar() {
           <Link to="/" className="nav__brand" aria-label="NOORÉ home">
             <FlameMark size={20} className="nav__flame" />
             <span className="nav__lockup">
-              <span className="nav__wordmark">NOORÉ</span>
+              <span className="nav__wordmark">Nooré</span>
               <span className="nav__tagline">Made to make moments</span>
             </span>
           </Link>
