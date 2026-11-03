@@ -568,14 +568,27 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
 .space__link { justify-self: start; margin-top: 10px; border-bottom: 1px solid var(--line-strong); padding-bottom: 4px; transition: color 0.3s, border-color 0.3s; }
 .space__link:hover { color: var(--gold-light); border-color: var(--gold-light); }
 .space__spacer { height: 10vh; }
-@media (max-width: 960px) {
-  .space { grid-template-columns: 1fr; }
-  .space__sticky { height: 52vh; z-index: 2; }
-  .space__sticky::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 80px; background: linear-gradient(180deg, transparent, #0d0907); }
-  .space__steps { margin-left: 0; padding-top: 6vh; }
-  .space__step { min-height: 55vh; }
-  .space__intro { margin-bottom: 8vh; }
+.space--slider { display: block; padding-block: clamp(56px, 10vw, 90px); }
+.space--slider .space__intro { margin-bottom: 8px; }
+.space--slider .space__scene { height: clamp(240px, 36vh, 420px); touch-action: pan-y; }
+.space--slider .space__caption { left: var(--gutter); bottom: 14px; }
+.space--slider .space__product { font-size: 1.3rem; }
+.space__track { position: relative; display: flex; gap: 14px; padding: 18px var(--gutter) 4px; scroll-padding-inline: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.space__track::-webkit-scrollbar { display: none; }
+.space__slide { flex: 0 0 86%; display: grid; align-content: start; gap: 10px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(246, 239, 228, 0.03); scroll-snap-align: start; opacity: 0.45; transition: opacity 0.5s var(--ease-out); }
+.space__slide.is-active { opacity: 1; }
+.space__slide .space__room { font-size: clamp(1.8rem, 6vw, 2.6rem); }
+.space__slide .space__line { font-size: 1rem; line-height: 1.55; }
+.space__nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.space__nav .arrow-btn { width: 46px; height: 46px; }
+.space__nav .arrow-btn:disabled { opacity: 0.3; pointer-events: none; }
+@media (hover: none) {
+  .space__nav .arrow-btn:hover { background: none; color: var(--fg); transform: none; }
 }
+.space__dots { display: flex; }
+.space__dot { width: 30px; height: 44px; display: grid; place-items: center; }
+.space__dot span { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); transition: background 0.3s, transform 0.3s; }
+.space__dot.is-active span { background: var(--gold-light); transform: scale(1.3); }
 
 /* ─── Craft ───────────────────────────────────────────────────── */
 .craft__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
