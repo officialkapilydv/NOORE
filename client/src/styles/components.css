@@ -270,8 +270,10 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
 .nav__link::after { content: ''; position: absolute; left: 0; bottom: 4px; width: 100%; height: 1px; background: var(--gold); transform: scaleX(0); transform-origin: right; transition: transform 0.5s var(--ease-out); }
 .nav__link.is-active::after, .nav__link:hover::after { transform: scaleX(1); transform-origin: left; }
 .nav__brand { display: inline-flex; align-items: center; gap: 10px; color: var(--cream); }
-.nav__flame { color: var(--gold-light); }
+.nav__flame { flex-shrink: 0; color: var(--gold-light); }
 .nav__wordmark { font-family: var(--font-display); font-size: 1.75rem; letter-spacing: 0.28em; margin-right: -0.28em; font-weight: 500; }
+.nav__lockup { display: grid; justify-items: center; gap: 2px; }
+.nav__tagline { font-size: 0.5rem; letter-spacing: 0.26em; margin-right: -0.26em; text-transform: uppercase; white-space: nowrap; line-height: 1; opacity: 0.8; }
 .nav__right { display: flex; justify-content: flex-end; align-items: center; }
 .nav__actions { display: flex; align-items: center; gap: 6px; }
 .nav__icon { position: relative; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: var(--cream); transition: background 0.3s, color 0.3s; }
@@ -309,6 +311,11 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
   .nav__inner { grid-template-columns: auto 1fr; }
   .nav__brand { order: -1; }
   .nav__burger { display: grid; }
+}
+@media (max-width: 420px) {
+  .nav__brand { gap: 6px; }
+  .nav__wordmark { font-size: 1.35rem; }
+  .nav__tagline { font-size: 0.42rem; letter-spacing: 0.2em; margin-right: -0.2em; }
 }
 
 /* ─── Footer ──────────────────────────────────────────────────── */
@@ -476,16 +483,18 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
 /* ─── Hero ────────────────────────────────────────────────────── */
 .hero { position: relative; min-height: 100svh; display: flex; align-items: center; background: #0d0907; color: var(--cream); overflow: hidden; }
 .hero__scene { position: absolute; inset: 0; }
-.hero__vignette { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(13, 9, 7, 0.9) 0%, rgba(13, 9, 7, 0.55) 30%, rgba(13, 9, 7, 0) 55%), linear-gradient(180deg, rgba(13, 9, 7, 0.4), rgba(13, 9, 7, 0) 30%, rgba(13, 9, 7, 0) 70%, rgba(13, 9, 7, 0.95)); }
-.hero__content { position: relative; z-index: 2; display: grid; gap: 26px; padding-top: calc(var(--nav-h) + 20px); padding-bottom: 80px; max-width: 760px; }
-.hero__title { font-size: var(--fs-hero); line-height: 0.95; letter-spacing: -0.02em; min-height: 1.9em; }
+.hero__photo { position: absolute; inset: 0; overflow: hidden; }
+.hero__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 73% 50%; }
+.hero__vignette { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(13, 9, 7, 0.92) 0%, rgba(13, 9, 7, 0.78) 30%, rgba(13, 9, 7, 0.45) 42%, rgba(13, 9, 7, 0) 54%), linear-gradient(270deg, rgba(13, 9, 7, 0.6), rgba(13, 9, 7, 0) 10%), linear-gradient(180deg, rgba(13, 9, 7, 0.4), rgba(13, 9, 7, 0) 30%, rgba(13, 9, 7, 0) 70%, rgba(13, 9, 7, 0.95)); }
+.hero__content { position: relative; z-index: 2; margin-inline: max(var(--gutter), (100% - 1600px) / 2) auto; display: grid; gap: 26px; padding-top: calc(var(--nav-h) + 20px); padding-bottom: 80px; max-width: 760px; }
+.hero__title { font-size: clamp(2.5rem, 5vw, 5.4rem); line-height: 1; letter-spacing: -0.02em; max-width: 9em; min-height: 2.9em; }
 .hero__lead { max-width: 52ch; }
 .hero__cta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
 .hero__facts { list-style: none; margin: 26px 0 0; padding: 26px 0 0; border-top: 1px solid var(--line); display: flex; gap: clamp(28px, 4vw, 60px); }
 .hero__facts li { display: grid; }
 .hero__facts strong { font-family: var(--font-display); font-size: 2rem; font-weight: 400; line-height: 1; color: var(--gold-light); }
 .hero__facts span { font-size: var(--fs-micro); letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-muted); margin-top: 6px; }
-.hero__hint { position: absolute; left: var(--gutter); bottom: 34px; z-index: 2; display: flex; align-items: center; gap: 14px; color: var(--fg-muted); }
+.hero__hint { position: absolute; left: max(var(--gutter), (100% - 1600px) / 2); bottom: 34px; z-index: 2; display: flex; align-items: center; gap: 14px; color: var(--fg-muted); }
 .hero__hint-line { position: relative; width: 1px; height: 54px; background: var(--line-strong); overflow: hidden; }
 .hero__hint-line span { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: var(--gold-light); }
 .hero__side { position: absolute; right: var(--gutter); bottom: 42px; z-index: 2; color: var(--fg-muted); writing-mode: vertical-rl; transform: rotate(180deg); }
@@ -496,6 +505,11 @@ a:hover > .swap .swap__inner, button:hover > .swap .swap__inner { transform: tra
   .hero__content { padding-top: 56vh; padding-bottom: 90px; }
   .hero__title { min-height: 0; }
   .hero__side { display: none; }
+}
+/* Portrait: size the photo so the whole candle (73% across, 26% of its width) fits above the text. */
+@media (max-width: 960px) and (max-aspect-ratio: 4/5) {
+  .hero__photo img { position: absolute; top: var(--nav-h); left: 50%; width: auto; max-width: none; height: min(121vw, max(52vh, 73vw)); transform: translateX(-73%); -webkit-mask-image: linear-gradient(180deg, transparent, #000 8%, #000 80%, transparent 97%); mask-image: linear-gradient(180deg, transparent, #000 8%, #000 80%, transparent 97%); }
+  .hero__vignette { background: linear-gradient(180deg, rgba(13, 9, 7, 0.3), rgba(13, 9, 7, 0) 140px); }
 }
 
 /* ─── Collections showcase ────────────────────────────────────── */

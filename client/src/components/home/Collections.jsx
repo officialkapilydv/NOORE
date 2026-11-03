@@ -18,7 +18,7 @@ export function CollectionsShowcase() {
   return (
     <section className="section collections" data-theme="dark">
       <div className="container">
-        <SectionHeading eyebrow="The collections" title={<>Three tiers of <em>light</em></>} lead="From the pastel glass of the Essentials to the marble and brass of Luxury, every NOORÉ candle is poured by hand with the same wax, the same wicks and the same obsession." />
+        <SectionHeading eyebrow="The collections" title={<>More than candles,<br /><em>they’re moments.</em></>} lead="From the soft glow of a quiet evening to the warmth of a heartfelt celebration, NOORÉ’s collections are crafted to turn everyday spaces into something more — soulful, serene and unforgettable." />
         <div className="collections__grid">
           {items.map((c, i) => {
             const tone = TONE[c.slug] || TONE.premium;

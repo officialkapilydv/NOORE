@@ -115,7 +115,10 @@ export function Navbar() {
 
           <Link to="/" className="nav__brand" aria-label="NOORÉ home">
             <FlameMark size={20} className="nav__flame" />
-            <span className="nav__wordmark">NOORÉ</span>
+            <span className="nav__lockup">
+              <span className="nav__wordmark">NOORÉ</span>
+              <span className="nav__tagline">Made to make moments</span>
+            </span>
           </Link>
 
           <div className="nav__right">

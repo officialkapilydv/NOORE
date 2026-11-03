@@ -137,6 +137,7 @@ em,
 }
 .container--wide {
   width: min(1600px, 100% - var(--gutter) * 2);
+  margin-inline: auto;
 }
 .section {
   position: relative;
@@ -200,7 +201,9 @@ em,
 .gold {
   color: var(--gold);
 }
-.gold-text {
+/* SplitText animates each word in its own box, which the parent's clipped gradient can't paint through. */
+.gold-text,
+.gold-text .split__item {
   background: linear-gradient(110deg, #b58d3a 0%, #e8cf8a 35%, #fff4cf 50%, #e8cf8a 65%, #b58d3a 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;

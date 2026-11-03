@@ -21,7 +21,7 @@ main[data-theme] { background: var(--bg); color: var(--fg); }
 .collection__hero { position: relative; min-height: 92vh; display: flex; align-items: flex-end; overflow: hidden; color: var(--cream); }
 .collection__scene { position: absolute; inset: 0; }
 .collection__scene::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(13, 9, 7, 0.55), rgba(13, 9, 7, 0) 35%, rgba(13, 9, 7, 0) 55%, rgba(13, 9, 7, 0.96)); }
-.collection__copy { position: relative; z-index: 2; display: grid; gap: 18px; padding-bottom: clamp(40px, 6vw, 70px); max-width: 860px; padding-top: 52vh; }
+.collection__copy { position: relative; z-index: 2; margin-inline: max(var(--gutter), (100% - 1600px) / 2) auto; display: grid; gap: 18px; padding-bottom: clamp(40px, 6vw, 70px); max-width: 860px; padding-top: 52vh; }
 .collection__copy h1 { font-size: var(--fs-h1); }
 .collection__meta { display: flex; flex-wrap: wrap; gap: 14px; color: var(--fg-muted); margin-top: 8px; }
 .collection__specs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 0 0 50px; margin-bottom: 50px; border-bottom: 1px solid var(--line); }
